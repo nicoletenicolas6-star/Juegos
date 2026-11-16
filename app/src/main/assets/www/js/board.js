@@ -37,6 +37,8 @@
       hint: null,
       hintTimer: 0,
       particles: [],
+      rings: [],
+      comboText: null,
       score: 0,
       cascade: 0,
       boardX: 0, boardY: 0, cell: 0,
@@ -275,7 +277,9 @@
         cb.onScore && cb.onScore(board.score);
         if (cascade > 1) {
           cb.floatText && cb.floatText("¡COMBO x" + cascade + "! 🔥");
-          board.shake = Math.min(10, cascade * 3);
+          board.shake = Math.min(14, 4 + cascade * 3);
+          board.comboText = { txt: "¡COMBO x" + cascade + "! 🔥", t: 0, big: cascade >= 3 };
+          board.rings.push({ x: window.innerWidth / 2, y: board.boardY + board.cell * ROWS / 2, r: 10, max: board.cell * 3, life: 1, color: "255,159,67" });
         }
       }
 
@@ -437,9 +441,12 @@
     var ta = board.grid[ra][ca], tb = board.grid[rb][cb2];
     var pa = ta.pu, pb = tb.pu;
     board.grid[ra][ca] = null; board.grid[rb][cb2] = null;
-    board.shake = 14;
+    board.shake = 16;
     board.flash = 1;
     cb.floatText && cb.floatText("¡COMBO ÉPICO! ✨");
+    board.comboText = { txt: "¡COMBO ÉPICO! ✨", t: 0, big: true };
+    board.rings.push({ x: px(ca) + board.cell / 2, y: py(ra) + board.cell / 2, r: 10, max: board.cell * 4, life: 1, color: "255,215,94" });
+    board.rings.push({ x: px(cb2) + board.cell / 2, y: py(rb) + board.cell / 2, r: 10, max: board.cell * 4, life: 1, color: "255,215,94" });
 
     var isR = function (p) { return p === PU.ROCKET_H || p === PU.ROCKET_V; };
 
@@ -743,6 +750,16 @@
       board.propFly.t += 0.08;
       if (board.propFly.t >= 1) board.propFly = null;
     }
+    if (board.comboText) {
+      board.comboText.t += 0.03;
+      if (board.comboText.t >= 1.2) board.comboText = null;
+    }
+    for (var ri = board.rings.length - 1; ri >= 0; ri--) {
+      var rg = board.rings[ri];
+      rg.r += (rg.max - rg.r) * 0.18 + 2;
+      rg.life -= 0.035;
+      if (rg.life <= 0) board.rings.splice(ri, 1);
+    }
     if (board.hammerAnim) {
       board.hammerAnim.t += 0.15;
       if (board.hammerAnim.t >= 1) board.hammerAnim = null;
@@ -836,6 +853,44 @@
       ctx.fill();
     }
     ctx.globalAlpha = 1;
+
+    /* anillos de explosión de combos */
+    for (var g2 = 0; g2 < board.rings.length; g2++) {
+      var ring = board.rings[g2];
+      ctx.globalAlpha = Math.max(ring.life, 0);
+      ctx.strokeStyle = "rgba(" + ring.color + ",0.9)";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(ring.x, ring.y, ring.r, 0, 7);
+      ctx.stroke();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(255,255,255,0.7)";
+      ctx.beginPath();
+      ctx.arc(ring.x, ring.y, ring.r * 0.7, 0, 7);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    /* texto de combo gigante */
+    if (board.comboText) {
+      var ct = board.comboText;
+      var pop = ct.t < 0.18 ? ct.t / 0.18 : 1;
+      var alpha = ct.t > 0.8 ? Math.max(0, 1 - (ct.t - 0.8) / 0.4) : 1;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(W / 2, board.boardY + board.cell * 1.2);
+      var wob = Math.sin(ct.t * 12) * 0.04;
+      ctx.rotate(wob);
+      ctx.scale(pop, pop);
+      ctx.font = "900 " + (ct.big ? 42 : 32) + "px sans-serif";
+      ctx.textAlign = "center";
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = "rgba(0,0,0,0.75)";
+      ctx.strokeText(ct.txt, 0, 0);
+      ctx.fillStyle = ct.big ? "#ffd75e" : "#ff9f43";
+      ctx.fillText(ct.txt, 0, 0);
+      ctx.restore();
+    }
 
     /* animaciones de boosters */
     if (board.hammerAnim) {

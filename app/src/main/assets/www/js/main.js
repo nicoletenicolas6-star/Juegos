@@ -20,7 +20,7 @@
   var DEF_SAVE = {
     name: "", age: 0, gender: "m", role: "Rey", onboarded: false,
     coins: 200, stars: 0, level: 1, lives: 5, livesTs: Date.now(),
-    boosters: { hammer: 1, arrow: 0, cannon: 0, hat: 0 },
+    boosters: { hammer: 1, arrow: 1, cannon: 0, hat: 0 },
     streak: 0, dailyLast: "", dailyDay: 0,
     custom: { body: "normal", hair: "hair", beard: "beard", cloth: "#e63946" },
     settings: { music: 0.6, sfx: 0.8, vib: true },
@@ -517,11 +517,12 @@
   }
 
   function resultLoop(ts) {
-    if (!resultAnimating) return;
-    try {
-      resultCtx.clearRect(0, 0, 200, 220);
-      RCChar.draw(resultCtx, 100, 205, 190, charCustom(), resultPose, ts);
-    } catch (e) { showError(e); }
+    if (resultAnimating) {
+      try {
+        resultCtx.clearRect(0, 0, 200, 220);
+        RCChar.draw(resultCtx, 100, 205, 190, charCustom(), resultPose, ts);
+      } catch (e) { showError(e); }
+    }
     requestAnimationFrame(resultLoop);
   }
 
@@ -621,6 +622,24 @@
 
   /* ================= TIENDA ================= */
   var shopTab = "items";
+  var stylePreviewCtx = $("style-preview").getContext("2d");
+  var previewCustom = null, stylePreviewAnimating = false;
+  function stylePreviewLoop(ts) {
+    if (!stylePreviewAnimating) return;
+    try {
+      stylePreviewCtx.clearRect(0, 0, 140, 160);
+      RCChar.draw(stylePreviewCtx, 70, 150, 135, previewCustom || charCustom(), "idle", ts);
+    } catch (e) {}
+    requestAnimationFrame(stylePreviewLoop);
+  }
+  function startStylePreview() {
+    previewCustom = JSON.parse(JSON.stringify(S.custom));
+    if (!stylePreviewAnimating) {
+      stylePreviewAnimating = true;
+      requestAnimationFrame(stylePreviewLoop);
+    }
+  }
+  function stopStylePreview() { stylePreviewAnimating = false; }
   function openShop() {
     $("shop-coins").textContent = S.coins;
     $("shop-country").textContent = S.country === "mexico" ? "de México 🇲🇽" : "de Cuba 🇨🇺";
@@ -633,7 +652,10 @@
     styleBox.classList.toggle("hidden", shopTab !== "style");
     $("tab-items").classList.toggle("on", shopTab === "items");
     $("tab-style").classList.toggle("on", shopTab === "style");
-    if (shopTab === "items") renderShopItems(); else renderShopStyle();
+    $("style-preview").classList.toggle("hidden", shopTab !== "style");
+    $("style-hint").classList.toggle("hidden", shopTab !== "style");
+    if (shopTab === "items") renderShopItems();
+    else { renderShopStyle(); startStylePreview(); }
   }
   function renderShopItems() {
     var box = $("shop-items");
@@ -671,6 +693,13 @@
         '<span class="si-icon">' + item.icon + '</span>' +
         '<span class="si-info"><b>' + item.name + '</b><small>' + item.desc + '</small></span>' +
         '<button class="btn ' + (equipped ? "btn-grey" : (owned || afford ? "btn-gold" : "btn-grey")) + '">' + btnTxt + '</button>';
+      row.addEventListener("click", function () {
+        previewCustom = JSON.parse(JSON.stringify(S.custom));
+        for (var k3 in item.set) {
+          if (k3 === "vehicle") previewCustom.vehicle = item.set[k3];
+          else previewCustom[k3] = item.set[k3];
+        }
+      });
       row.querySelector("button").addEventListener("click", function () {
         if (equipped) return;
         if (!owned && !S.dev && item.price > S.coins) { toast("🪙 Monedas insuficientes"); return; }
@@ -717,6 +746,7 @@
   }
 
   $("btn-shop-close").addEventListener("click", function () {
+    stopStylePreview();
     goto(current === "screen-shop" ? "screen-home" : "screen-home");
     updateHud();
   });
@@ -856,11 +886,19 @@
       row.innerHTML =
         '<span class="ri-icon">' + z.icon + '</span>' +
         '<span class="ri-info"><b>' + z.name + '</b><small>' + (done ? "✅ Restaurado" : "Recompensa: +" + z.reward + " 🪙") + '</small></span>' +
-        '<button class="btn ' + (done ? "btn-grey" : "btn-gold") + '">' + (done ? "Hecho" : z.cost + " ⭐") + '</button>';
-      row.querySelector("button").addEventListener("click", function () {
+        '<span class="ri-btns">' + (done ? '<button class="btn btn-grey">Hecho</button>' :
+          '<button class="btn btn-gold">' + z.cost + " ⭐</button>" +
+          '<button class="btn btn-teal">' + (z.cost * 40) + " 🪙</button>") + '</span>';
+      var doRenov = function (withCoins) {
         if (done) return;
-        if (S.stars < z.cost) { toast("⭐ Te faltan estrellas. ¡Gana niveles!"); return; }
-        S.stars -= z.cost;
+        var coinCost = z.cost * 40;
+        if (withCoins) {
+          if (S.coins < coinCost) { toast("🪙 Te faltan monedas. ¡Gana niveles o visita la tienda!"); return; }
+          S.coins -= coinCost;
+        } else {
+          if (S.stars < z.cost) { toast("⭐ Te faltan estrellas. ¡Gana niveles!"); return; }
+          S.stars -= z.cost;
+        }
         S.coins += z.reward;
         S.renovated.push(S.country + ":" + z.id);
         save();
@@ -868,7 +906,13 @@
         toast("🏰 ¡" + z.name + " restaurado! +" + z.reward + " 🪙");
         openRenov();
         updateHud();
-      });
+      };
+      var btns = row.querySelectorAll("button");
+      for (var rb = 0; rb < btns.length; rb++) {
+        (function (btn, idx) {
+          btn.addEventListener("click", function () { doRenov(idx === 1); });
+        })(btns[rb], rb);
+      }
       list.appendChild(row);
     });
     goto("screen-renov");

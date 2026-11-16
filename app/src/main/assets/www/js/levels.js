@@ -187,7 +187,7 @@
   ];
 
   /* Desbloqueo de boosters en-juego */
-  var BOOSTER_UNLOCK = { hammer: 3, arrow: 8, cannon: 15, hat: 25 };
+  var BOOSTER_UNLOCK = { hammer: 1, arrow: 3, cannon: 6, hat: 10 };
   var BOOSTER_INFO = {
     hammer: { icon: "🔨", name: "Martillo Real", desc: "Toca una ficha y el martillo la romperá con astillas volando. ¡Sin gastar movimientos!" },
     arrow: { icon: "🏹", name: "Flecha Certera", desc: "Toca una ficha y una flecha atravesará toda su fila con estela luminosa." },

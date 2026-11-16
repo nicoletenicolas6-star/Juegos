@@ -221,6 +221,8 @@ html, body {
 .result-rewards { font-size: 17px; font-weight: 700; color: #9fe8b0; margin-bottom: 12px; min-height: 24px; }
 
 /* ---------- Shop ---------- */
+#style-preview { display: block; margin: 0 auto 4px; background: rgba(0,0,0,0.3); border-radius: 14px; border: 2px solid rgba(255,215,94,0.5); }
+.style-hint { font-size: 12px; color: #9fe8b0; margin-bottom: 8px; text-align: center; }
 .shop-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
 .shop-tab { background: linear-gradient(180deg,#4a4a6a,#2c2c48); border: 2px solid rgba(255,255,255,0.3); }
 .shop-tab.on { background: linear-gradient(180deg,#ffd75e,#e8a020); border-color: #ffe9a8; color: #3a2400; }
@@ -281,6 +283,8 @@ html, body {
 .renov-item .ri-info b { display: block; font-size: 15px; }
 .renov-item .ri-info small { color: #9fc9ff; font-size: 12px; }
 .renov-item .btn { padding: 7px 12px; font-size: 13px; }
+.ri-btns { display: flex; flex-direction: column; gap: 6px; }
+.ri-btns .btn { padding: 6px 12px; font-size: 12px; white-space: nowrap; }
 
 /* ---------- Floating texts ---------- */
 .float-text {
