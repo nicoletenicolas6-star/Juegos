@@ -129,15 +129,24 @@
   }
   requestAnimationFrame(splashLoop);
 
-  $("screen-splash").addEventListener("click", function () {
+  function enterGame() {
     if (started) return;
     started = true;
-    RCAudio.unlock();
-    musicForCountry();
+    try { RCAudio.unlock(); } catch (e) {}
+    try { musicForCountry(); } catch (e) {}
     if (!S.onboarded) goto("screen-onboard");
     else goto("screen-home");
-    updateHud();
-  });
+    try { updateHud(); } catch (e) {}
+  }
+
+  $("screen-splash").addEventListener("click", enterGame);
+  $("screen-splash").addEventListener("touchend", function (e) {
+    e.preventDefault();
+    enterGame();
+  }, { passive: false });
+  $("screen-splash").addEventListener("touchstart", function (e) {
+    e.preventDefault();
+  }, { passive: false });
 
   /* ================= ONBOARDING ================= */
   var gender = "m";
@@ -149,7 +158,13 @@
     });
   });
 
-  $("btn-onboard-go").addEventListener("click", function () {
+  $("btn-onboard-go").addEventListener("click", finishOnboard);
+  $("btn-onboard-go").addEventListener("touchend", function (e) {
+    e.preventDefault();
+    finishOnboard();
+  }, { passive: false });
+
+  function finishOnboard() {
     var name = $("inp-name").value.trim();
     var age = parseInt($("inp-age").value, 10);
     if (!name) { toast("👑 Dinos tu nombre, majestad"); return; }
@@ -161,7 +176,7 @@
     toast("👑 ¡" + S.role + " " + S.name + " de " + (S.country === "mexico" ? "México" : "Cuba") + "!");
     goto("screen-home");
     updateHud();
-  });
+  }
 
   /* ================= HOME ================= */
   function updateHud() {

@@ -89,6 +89,7 @@
   }
 
   function layout() {
+    if (!board) return;
     var W = window.innerWidth, H = window.innerHeight;
     var topPad = 90, botPad = 92;
     var availW = W - 16, availH = H - topPad - botPad;

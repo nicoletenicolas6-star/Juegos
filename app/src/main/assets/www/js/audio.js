@@ -3,6 +3,7 @@
   "use strict";
 
   var AC = null;
+  var audioBroken = false;
   var musicGain = null;
   var sfxGain = null;
   var musicTimer = null;
@@ -11,15 +12,26 @@
   var settings = { music: 0.6, sfx: 0.8 };
 
   function ctx() {
+    if (audioBroken) return null;
     if (!AC) {
-      AC = new (window.AudioContext || window.webkitAudioContext)();
-      musicGain = AC.createGain();
-      sfxGain = AC.createGain();
-      musicGain.connect(AC.destination);
-      sfxGain.connect(AC.destination);
-      applyVolumes();
+      try {
+        var Ctor = window.AudioContext || window.webkitAudioContext;
+        if (!Ctor) { audioBroken = true; return null; }
+        AC = new Ctor();
+        musicGain = AC.createGain();
+        sfxGain = AC.createGain();
+        musicGain.connect(AC.destination);
+        sfxGain.connect(AC.destination);
+        applyVolumes();
+      } catch (e) {
+        audioBroken = true;
+        AC = null;
+        return null;
+      }
     }
-    if (AC.state === "suspended") AC.resume();
+    try {
+      if (AC.state === "suspended") AC.resume();
+    } catch (e) {}
     return AC;
   }
 
@@ -37,6 +49,7 @@
   /* ---------- SFX ---------- */
   function tone(freq, dur, type, vol, when, slide) {
     var c = ctx();
+    if (!c) return;
     var t = c.currentTime + (when || 0);
     var o = c.createOscillator();
     var g = c.createGain();
@@ -51,6 +64,7 @@
 
   function noise(dur, vol, when, filterFreq) {
     var c = ctx();
+    if (!c) return;
     var t = c.currentTime + (when || 0);
     var len = Math.floor(c.sampleRate * dur);
     var buf = c.createBuffer(1, len, c.sampleRate);
@@ -104,6 +118,7 @@
   /* ---------- Instrument voices ---------- */
   function pluck(freq, when, dur, vol) {
     var c = ctx();
+    if (!c) return;
     var t = c.currentTime + when;
     var o = c.createOscillator();
     var g = c.createGain();
@@ -117,6 +132,7 @@
 
   function bass(freq, when, dur) {
     var c = ctx();
+    if (!c) return;
     var t = c.currentTime + when;
     var o = c.createOscillator();
     var g = c.createGain();
@@ -130,6 +146,7 @@
 
   function shaker(when, vol) {
     var c = ctx();
+    if (!c) return;
     var t = c.currentTime + when;
     var len = Math.floor(c.sampleRate * 0.05);
     var buf = c.createBuffer(1, len, c.sampleRate);
@@ -148,6 +165,7 @@
 
   function conga(freq, when) {
     var c = ctx();
+    if (!c) return;
     var t = c.currentTime + when;
     var o = c.createOscillator();
     var g = c.createGain();
@@ -162,6 +180,7 @@
 
   function trumpet(freq, when, dur) {
     var c = ctx();
+    if (!c) return;
     var t = c.currentTime + when;
     var o = c.createOscillator();
     var g = c.createGain();
@@ -213,6 +232,7 @@
 
   function toneWood(s) {
     var c = ctx();
+    if (!c) return;
     var t = c.currentTime;
     var o = c.createOscillator();
     var g = c.createGain();
@@ -254,7 +274,7 @@
   /* ---------- Sequencer ---------- */
   function startMusic(song) {
     stopMusic();
-    ctx();
+    if (!ctx()) return;
     currentSong = song;
     step = 0;
     var stepDur = song === "cubana" ? 0.125 : 0.15;
