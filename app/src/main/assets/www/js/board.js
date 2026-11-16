@@ -324,7 +324,7 @@
       cb.onObjective && cb.onObjective("ice", 1);
       return 1;
     }
-    if (t.pu) { activatePU(r, c, t.pu, t.type); return 1; }
+    if (t.pu) { await activatePU(r, c, t.pu, t.type); return 1; }
     burst(px(c) + board.cell / 2, py(r) + board.cell / 2, RCLevels.TILE_COLORS[t.type], 10);
     RCAudio.sfx("match", mult);
     cb.onObjective && cb.onObjective("collect", 1, t.type);
@@ -348,19 +348,19 @@
     return out;
   }
 
-  function activatePU(r, c, pu, colorType) {
+  async function activatePU(r, c, pu, colorType) {
     var cx2 = px(c) + board.cell / 2, cy2 = py(r) + board.cell / 2;
     if (pu === PU.ROCKET_H || pu === PU.ROCKET_V) {
       RCAudio.sfx("rocket");
       board.shake = 5;
       var cells = cellsForPU(r, c, pu);
+      var origin = pu === PU.ROCKET_H ? c : r;
+      cells.sort(function (a2, b3) { return Math.abs(a2.c - c) + Math.abs(a2.r - r) - (Math.abs(b3.c - c) + Math.abs(b3.r - r)); });
       for (var i = 0; i < cells.length; i++) {
-        (function (cell, delay) {
-          setTimeout(function () {
-            burst(px(cell.c) + board.cell / 2, py(cell.r) + board.cell / 2, "#ffd75e", 6);
-            smashCell(cell.r, cell.c);
-          }, delay);
-        })(cells[i], Math.abs(i - (pu === PU.ROCKET_H ? c : r)) * 30);
+        var cell = cells[i];
+        burst(px(cell.c) + board.cell / 2, py(cell.r) + board.cell / 2, "#ffd75e", 6);
+        smashCell(cell.r, cell.c);
+        if (Math.abs((pu === PU.ROCKET_H ? cell.c : cell.r) - origin) % 2 === 1) await sleep(24);
       }
     } else if (pu === PU.TNT) {
       RCAudio.sfx("tnt");
@@ -385,14 +385,13 @@
       RCAudio.sfx("prop");
       var target2 = randomObjectiveCell() || { r: Math.floor(Math.random() * ROWS), c: Math.floor(Math.random() * COLS) };
       board.propFly = { x: cx2, y: cy2, tx: px(target2.c) + board.cell / 2, ty: py(target2.r) + board.cell / 2, t: 0 };
-      setTimeout(function () {
-        RCAudio.sfx("tnt");
-        board.shake = 8;
-        for (var dr2 = -1; dr2 <= 1; dr2++) for (var dc2 = -1; dc2 <= 1; dc2++) {
-          smashCell(target2.r + dr2, target2.c + dc2);
-        }
-        burst(px(target2.c) + board.cell / 2, py(target2.r) + board.cell / 2, "#4fd2ff", 16);
-      }, 450);
+      await sleep(450);
+      RCAudio.sfx("tnt");
+      board.shake = 8;
+      for (var dr2 = -1; dr2 <= 1; dr2++) for (var dc2 = -1; dc2 <= 1; dc2++) {
+        smashCell(target2.r + dr2, target2.c + dc2);
+      }
+      burst(px(target2.c) + board.cell / 2, py(target2.r) + board.cell / 2, "#4fd2ff", 16);
     }
     board.grid[r][c] = null;
     cb.onObjective && cb.onObjective("collect", 0);

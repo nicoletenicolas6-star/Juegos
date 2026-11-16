@@ -396,9 +396,9 @@
     var unlockedAt = RCLevels.BOOSTER_UNLOCK;
     ["hammer", "arrow", "cannon", "hat"].forEach(function (b) {
       var el = $("b-" + b);
-      var locked = S.level < unlockedAt[b];
-      el.classList.toggle("locked", locked);
-      el.classList.toggle("nostock", (S.boosters[b] || 0) <= 0);
+      var stock = (S.boosters[b] || 0) <= 0;
+      el.classList.toggle("locked", stock && S.level < unlockedAt[b]);
+      el.classList.toggle("nostock", stock);
       $("c-" + b).textContent = S.boosters[b] || 0;
       el.classList.toggle("armed", armedBooster === b);
     });
@@ -408,8 +408,11 @@
   document.querySelectorAll(".booster").forEach(function (b) {
     b.addEventListener("click", function () {
       var name = b.getAttribute("data-b");
-      if (S.level < RCLevels.BOOSTER_UNLOCK[name]) { toast("🔒 " + RCLevels.BOOSTER_INFO[name].name + " se desbloquea en el nivel " + RCLevels.BOOSTER_UNLOCK[name]); return; }
-      if ((S.boosters[name] || 0) <= 0) { toast("No tienes este potenciador. ¡Visita la tienda!"); return; }
+      if ((S.boosters[name] || 0) <= 0) {
+        if (S.level < RCLevels.BOOSTER_UNLOCK[name]) toast("🔒 Sin existencias. Se desbloquea en el nivel " + RCLevels.BOOSTER_UNLOCK[name] + " o cómpralo en la tienda");
+        else toast("No tienes este potenciador. ¡Visita la tienda!");
+        return;
+      }
       armedBooster = RCBoard.armBooster(name) ? name : null;
       renderBoosters();
       if (armedBooster) toast("Toca una ficha para usar " + RCLevels.BOOSTER_INFO[name].name);
@@ -914,7 +917,7 @@
       row.className = "renov-item" + (done ? " done" : "");
       row.innerHTML =
         '<span class="ri-icon">' + z.icon + '</span>' +
-        '<span class="ri-info"><b>' + z.name + '</b><small>' + (done ? "✅ Restaurado" : "Recompensa: +" + z.reward + " 🪙") + '</small></span>' +
+        '<span class="ri-info"><b>' + z.name + '</b><small>' + (done ? "✅ Restaurado (míralo en el pueblo)" : "Se ve en el pueblo · Recompensa: +" + z.reward + " 🪙") + '</small></span>' +
         '<span class="ri-btns">' + (done ? '<button class="btn btn-grey">Hecho</button>' :
           '<button class="btn btn-gold">' + z.cost + " ⭐</button>" +
           '<button class="btn btn-teal">' + (z.cost * 40) + " 🪙</button>") + '</span>';
@@ -1046,6 +1049,13 @@
   requestAnimationFrame(resultLoop);
 
   /* ================= INIT ================= */
+  RCScenes.setRenovCount(function () {
+    var n = 0;
+    for (var i = 0; i < S.renovated.length; i++) {
+      if (S.renovated[i].indexOf(S.country + ":") === 0) n++;
+    }
+    return n;
+  });
   RCAudio.setVolumes(S.settings.music, S.settings.sfx);
   tickLives();
   updateHud();

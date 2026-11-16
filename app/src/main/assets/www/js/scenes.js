@@ -414,6 +414,89 @@
     }
   };
 
+  /* Decoraciones por renovaciones compradas (0-4) */
+  var renovCountFn = function () { return 0; };
+  function setRenovCount(fn) { renovCountFn = fn || renovCountFn; }
+
+  function drawRenoDecor(ctx, W, H, reno, tod, now) {
+    if (reno <= 0) return;
+    var night = (tod === "noche");
+    var baseY = H * 0.72;
+    var i, x, y;
+    if (reno >= 1) {
+      /* guirnalda de luces de colores */
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(40,30,20,0.7)";
+      ctx.beginPath();
+      ctx.moveTo(0, H * 0.16);
+      for (x = 0; x <= W; x += 40) ctx.lineTo(x, H * 0.16 + Math.sin(x / W * Math.PI * 3) * 12);
+      ctx.stroke();
+      var cols = ["#ff5470", "#ffd75e", "#4fd2ff", "#7d3fd1", "#4ade80"];
+      for (i = 0; i < Math.ceil(W / 40); i++) {
+        x = i * 40 + 20;
+        y = H * 0.16 + Math.sin(x / W * Math.PI * 3) * 12 + 8;
+        var on = night || Math.sin(now / 400 + i) > -0.3;
+        ctx.fillStyle = on ? cols[i % cols.length] : "rgba(120,120,120,0.5)";
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, 7);
+        ctx.fill();
+      }
+    }
+    if (reno >= 2) {
+      /* banderas en el pueblo */
+      for (i = 0; i < 3; i++) {
+        x = W * (0.18 + i * 0.3);
+        ctx.strokeStyle = "#d8d8d8";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x, baseY);
+        ctx.lineTo(x, baseY - 90);
+        ctx.stroke();
+        var wave = Math.sin(now / 300 + i * 2) * 6;
+        ctx.fillStyle = i === 1 ? "#ff5470" : (i === 2 ? "#4fd2ff" : "#4ade80");
+        ctx.beginPath();
+        ctx.moveTo(x, baseY - 90);
+        ctx.quadraticCurveTo(x + 22, baseY - 86 + wave, x + 40, baseY - 80 + wave);
+        ctx.lineTo(x, baseY - 66);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+    if (reno >= 3) {
+      /* arcoiris sutil */
+      var rg = ctx.createLinearGradient(0, H * 0.1, 0, H * 0.4);
+      rg.addColorStop(0, "rgba(255,105,180,0.10)");
+      rg.addColorStop(0.5, "rgba(79,210,255,0.10)");
+      rg.addColorStop(1, "rgba(74,222,128,0.10)");
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.arc(W / 2, H * 0.75, H * 0.55, Math.PI, Math.PI * 2);
+      ctx.arc(W / 2, H * 0.75, H * 0.42, Math.PI, Math.PI * 2, true);
+      ctx.fill();
+    }
+    if (reno >= 4) {
+      /* fuegos artificiales */
+      for (i = 0; i < 3; i++) {
+        var seed = Math.floor(now / 1600 + i * 2.3);
+        var fx2 = W * (0.2 + ((seed * 37 + i * 91) % 60) / 100);
+        var fy2 = H * (0.12 + ((seed * 53 + i * 29) % 25) / 100);
+        var ft = (now % 1600) / 1600;
+        var fa = 1 - ft;
+        if (fa <= 0) continue;
+        ctx.globalAlpha = fa;
+        for (var k = 0; k < 10; k++) {
+          var ang = k * Math.PI / 5 + seed;
+          var dist = ft * H * 0.09;
+          ctx.fillStyle = ["#ffd75e", "#ff5470", "#4fd2ff"][i];
+          ctx.beginPath();
+          ctx.arc(fx2 + Math.cos(ang) * dist, fy2 + Math.sin(ang) * dist, 2.5, 0, 7);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
   function drawScene(ctx, W, H, zoneId, tod) {
     var baseY = H * 0.72;
     var fn = SCENES[zoneId] || SCENES.malecon;
@@ -423,6 +506,7 @@
     g.addColorStop(1, "rgba(0,0,0,0.35)");
     ctx.fillStyle = g;
     ctx.fillRect(0, H * 0.55, W, H * 0.45);
+    drawRenoDecor(ctx, W, H, renovCountFn(), tod, Date.now());
   }
 
   function tick() { time += 16; }
@@ -434,6 +518,7 @@
     timeOfDay: timeOfDay,
     drawSky: drawSky,
     drawScene: drawScene,
+    setRenovCount: setRenovCount,
     tick: tick,
     drawSea: sea
   };
