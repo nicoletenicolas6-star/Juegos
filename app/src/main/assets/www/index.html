@@ -3,11 +3,202 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Esquiva</title>
-<link rel="stylesheet" href="style.css">
+<title>Reino Cubano</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <canvas id="game"></canvas>
-<script src="game.js"></script>
+
+<!-- ============ SPLASH ============ -->
+<div id="screen-splash" class="screen">
+  <div class="splash-logo">
+    <div class="crown-emoji">👑</div>
+    <h1 class="game-title">REINO<br><span>CUBANO</span></h1>
+    <p class="splash-sub">Un match-3 de pura sabrosura</p>
+  </div>
+  <canvas id="splash-king" width="220" height="260"></canvas>
+  <p class="tap-hint">Toca para comenzar</p>
+</div>
+
+<!-- ============ ONBOARDING ============ -->
+<div id="screen-onboard" class="screen hidden">
+  <div class="panel onboard-panel">
+    <h2>👑 ¡Bienvenido al Reino!</h2>
+    <p class="onboard-sub">Antes de empezar, dinos quién eres</p>
+    <label class="field-label">¿Cómo te llamas, majestad?</label>
+    <input type="text" id="inp-name" maxlength="14" placeholder="Tu nombre real..." autocomplete="off">
+    <label class="field-label">¿Cuántos años tienes?</label>
+    <input type="number" id="inp-age" min="3" max="120" placeholder="Tu edad">
+    <label class="field-label">¿Eres...?</label>
+    <div class="gender-row">
+      <button class="gender-btn selected" data-g="m">🤴 Chico</button>
+      <button class="gender-btn" data-g="f">👸 Chica</button>
+    </div>
+    <button id="btn-onboard-go" class="btn btn-gold btn-big">COMENZAR MI REINADO</button>
+  </div>
+</div>
+
+<!-- ============ HOME ============ -->
+<div id="screen-home" class="screen hidden">
+  <div class="hud-top">
+    <div class="hud-chip" id="chip-avatar">🤴</div>
+    <div class="hud-chip coins">🪙 <span id="hud-coins">0</span></div>
+    <div class="hud-chip stars">⭐ <span id="hud-stars">0</span></div>
+    <div class="hud-chip lives" id="hud-lives">❤️ 5</div>
+    <button class="icon-btn" id="btn-settings">⚙️</button>
+  </div>
+  <div class="home-bottom">
+    <div class="home-title-box">
+      <div class="country-badge" id="country-badge">🇨🇺 CUBA</div>
+      <div class="zone-name" id="zone-name">Malecón Habanero</div>
+      <button class="btn btn-mini" id="btn-renov">🏰 Renovar</button>
+    </div>
+    <div class="home-buttons">
+      <button class="btn btn-teal btn-round" id="btn-shop">🛒<small>Tienda</small></button>
+      <button class="btn btn-gold btn-play" id="btn-play">JUGAR<span id="btn-level-num">Nivel 1</span></button>
+      <button class="btn btn-purple btn-round" id="btn-daily">🎁<small>Daily</small></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LEVEL INTRO ============ -->
+<div id="screen-intro" class="screen hidden">
+  <div class="panel intro-panel">
+    <div class="intro-head">
+      <h2 id="intro-level">Nivel 1</h2>
+      <span id="intro-diff" class="diff-badge hidden">🔥 Difícil</span>
+    </div>
+    <p class="intro-mission-title">🎯 Tu misión, majestad:</p>
+    <div id="intro-missions"></div>
+    <div id="intro-tutorial" class="tutorial-box hidden">
+      <p class="tutorial-title">✨ ¡Nuevo potenciador desbloqueado!</p>
+      <canvas id="tutorial-canvas" width="280" height="170"></canvas>
+      <p id="tutorial-text"></p>
+    </div>
+    <div id="preboosters" class="preboosters hidden">
+      <p class="preb-title">Coloca un potenciador inicial (opcional):</p>
+      <div class="preb-row">
+        <button class="preb" data-pu="rocketH"><span>🚀</span><small>50 🪙</small></button>
+        <button class="preb" data-pu="tnt"><span>🧨</span><small>80 🪙</small></button>
+        <button class="preb" data-pu="ball"><span>🔮</span><small>120 🪙</small></button>
+      </div>
+    </div>
+    <div class="intro-buttons">
+      <button class="btn btn-grey" id="btn-intro-back">← Volver</button>
+      <button class="btn btn-gold btn-big" id="btn-intro-play">¡A JUGAR!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GAME HUD ============ -->
+<div id="screen-game" class="screen hidden pointer-none">
+  <div class="game-hud">
+    <button class="icon-btn pointer-on" id="btn-pause">⏸️</button>
+    <div class="objective-chips" id="objective-chips"></div>
+    <div class="moves-box"><small>Movs</small><span id="hud-moves">25</span></div>
+  </div>
+  <div class="booster-bar" id="booster-bar">
+    <button class="booster pointer-on" data-b="hammer" id="b-hammer"><span>🔨</span><em id="c-hammer">0</em></button>
+    <button class="booster pointer-on" data-b="arrow" id="b-arrow"><span>🏹</span><em id="c-arrow">0</em></button>
+    <button class="booster pointer-on" data-b="cannon" id="b-cannon"><span>💥</span><em id="c-cannon">0</em></button>
+    <button class="booster pointer-on" data-b="hat" id="b-hat"><span>🎩</span><em id="c-hat">0</em></button>
+  </div>
+</div>
+
+<!-- ============ PAUSE ============ -->
+<div id="screen-pause" class="screen hidden">
+  <div class="panel pause-panel">
+    <h2>⏸️ Pausa</h2>
+    <button class="btn btn-gold btn-big" id="btn-resume">▶️ Continuar</button>
+    <button class="btn btn-teal" id="btn-pause-settings">⚙️ Configuración</button>
+    <button class="btn btn-grey" id="btn-quit">🏠 Salir al pueblo</button>
+  </div>
+</div>
+
+<!-- ============ WIN / LOSE ============ -->
+<div id="screen-result" class="screen hidden">
+  <div class="panel result-panel">
+    <h2 id="result-title">¡GANASTE!</h2>
+    <canvas id="result-king" width="200" height="220"></canvas>
+    <div id="result-stars" class="result-stars"></div>
+    <div id="result-rewards" class="result-rewards"></div>
+    <div class="intro-buttons">
+      <button class="btn btn-grey" id="btn-result-home">🏠</button>
+      <button class="btn btn-gold btn-big" id="btn-result-next">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SHOP ============ -->
+<div id="screen-shop" class="screen hidden">
+  <div class="panel shop-panel">
+    <h2>🛒 Tienda <span id="shop-country" class="shop-country">de Cuba</span></h2>
+    <p class="shop-coins">Tienes: 🪙 <span id="shop-coins">0</span></p>
+    <div id="shop-items" class="shop-items"></div>
+    <button class="btn btn-grey btn-big" id="btn-shop-close">Cerrar</button>
+  </div>
+</div>
+
+<!-- ============ DAILY ============ -->
+<div id="screen-daily" class="screen hidden">
+  <div class="panel daily-panel">
+    <h2>🎁 Recompensas Diarias</h2>
+    <div id="daily-grid" class="daily-grid"></div>
+    <button class="btn btn-gold btn-big" id="btn-claim">RECLAMAR</button>
+    <button class="btn btn-grey" id="btn-daily-close">Cerrar</button>
+  </div>
+</div>
+
+<!-- ============ SETTINGS ============ -->
+<div id="screen-settings" class="screen hidden">
+  <div class="panel settings-panel">
+    <h2>⚙️ Configuración</h2>
+    <div class="set-row"><span>🎵 Música</span><input type="range" id="set-music" min="0" max="100" value="60"></div>
+    <div class="set-row"><span>🔊 Efectos</span><input type="range" id="set-sfx" min="0" max="100" value="80"></div>
+    <div class="set-row"><span>📳 Vibración</span><button class="toggle on" id="set-vib">SÍ</button></div>
+    <div class="set-row"><span>♾️ Vidas infinitas</span><button class="toggle" id="set-inf">NO</button></div>
+    <h3>👑 Tu personaje</h3>
+    <div class="set-row"><span>Cuerpo</span>
+      <select id="set-body"><option value="normal">Normal</option><option value="fat">Gordo</option><option value="thin">Flaco</option></select>
+    </div>
+    <div class="set-row"><span>Pelo</span>
+      <select id="set-hair"><option value="hair">Con pelo</option><option value="bald">Calvo</option><option value="afro">Afro</option></select>
+    </div>
+    <div class="set-row"><span>Barba</span>
+      <select id="set-beard"><option value="none">Sin barba</option><option value="beard">Barba</option><option value="mustache">Solo bigote</option></select>
+    </div>
+    <div class="set-row"><span>Ropa</span>
+      <select id="set-cloth"><option value="#e63946">Rojo</option><option value="#2a6fdb">Azul</option><option value="#1a9e4b">Verde</option><option value="#8e44ad">Morado</option><option value="#d4a017">Dorado</option></select>
+    </div>
+    <canvas id="settings-king" width="140" height="160"></canvas>
+    <button class="btn btn-gold btn-big" id="btn-settings-close">Guardar</button>
+  </div>
+</div>
+
+<!-- ============ TRAVEL CINEMATIC ============ -->
+<div id="screen-travel" class="screen hidden">
+  <div class="travel-inner">
+    <h2 id="travel-title">🛳️ ¡Nivel 100 superado!</h2>
+    <canvas id="travel-canvas" width="320" height="220"></canvas>
+    <p id="travel-text">Zarpando hacia nuevos horizontes...</p>
+  </div>
+</div>
+
+<!-- ============ RENOVATION ============ -->
+<div id="screen-renov" class="screen hidden">
+  <div class="panel renov-panel">
+    <h2>🏰 Renovar <span id="renov-country">Cuba</span></h2>
+    <p class="renov-sub">Gasta tus ⭐ estrellas en restaurar los lugares del reino</p>
+    <div id="renov-list"></div>
+    <button class="btn btn-grey btn-big" id="btn-renov-close">Cerrar</button>
+  </div>
+</div>
+
+<script src="js/audio.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/character.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/board.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -33,15 +32,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(webView)
 
         hideSystemBars()
-
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                webView.evaluateJavascript(
-                    "javascript:(function(){if(window.__canGoBack && window.__canGoBack()) {window.__goBack();} })()",
-                    null
-                )
-            }
-        })
     }
 
     private fun hideSystemBars() {
