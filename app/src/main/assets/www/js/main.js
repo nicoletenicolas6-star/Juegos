@@ -23,8 +23,9 @@
     boosters: { hammer: 1, arrow: 0, cannon: 0, hat: 0 },
     streak: 0, dailyLast: "", dailyDay: 0,
     custom: { body: "normal", hair: "hair", beard: "beard", cloth: "#e63946" },
-    settings: { music: 0.6, sfx: 0.8, vib: true, infLives: false },
-    renovated: [], tutorials: [], country: "cuba"
+    settings: { music: 0.6, sfx: 0.8, vib: true },
+    renovated: [], tutorials: [], country: "cuba",
+    levelStars: {}, dev: false
   };
   var S = load();
 
@@ -88,7 +89,7 @@
   /* ---------- Vidas ---------- */
   var LIFE_MS = 10 * 60 * 1000;
   function tickLives() {
-    if (S.settings.infLives) { S.lives = 5; return; }
+    if (S.dev) { S.lives = 5; return; }
     if (S.lives < 5) {
       var elapsed = Date.now() - S.livesTs;
       var gained = Math.floor(elapsed / LIFE_MS);
@@ -100,7 +101,7 @@
     } else S.livesTs = Date.now();
   }
   function loseLife() {
-    if (S.settings.infLives) return;
+    if (S.dev) return;
     if (S.lives > 0) { S.lives--; S.livesTs = Date.now(); save(); }
   }
 
@@ -183,25 +184,26 @@
     $("hud-coins").textContent = S.coins;
     $("hud-stars").textContent = S.stars;
     var livesEl = $("hud-lives");
-    livesEl.textContent = S.settings.infLives ? "♾️" : "❤️ " + S.lives;
-    livesEl.classList.toggle("low", S.lives <= 1 && !S.settings.infLives);
+    livesEl.textContent = S.dev ? "♾️" : "❤️ " + S.lives;
+    livesEl.classList.toggle("low", S.lives <= 1 && !S.dev);
     $("chip-avatar").textContent = S.gender === "f" ? "👸" : "🤴";
     $("country-badge").textContent = S.country === "mexico" ? "🇲🇽 MÉXICO" : "🇨🇺 CUBA";
     var zone = RCScenes.zoneFor(S.country, S.level);
     $("zone-name").textContent = S.name ? S.role + " " + S.name + " · " + zone.name : zone.name;
     $("btn-level-num").textContent = "Nivel " + S.level;
-    $("btn-play").disabled = !S.settings.infLives && S.lives <= 0;
+    $("btn-play").disabled = !S.dev && S.lives <= 0;
   }
 
   $("btn-play").addEventListener("click", function () {
-    if (!S.settings.infLives && S.lives <= 0) { toast("💔 Sin vidas. Espera o visita la tienda"); return; }
+    if (!S.dev && S.lives <= 0) { toast("💔 Sin vidas. Espera o visita la tienda"); return; }
     openIntro(RCLevels.genLevel(S.level));
   });
 
-  $("btn-shop").addEventListener("click", openShop);
-  $("btn-daily").addEventListener("click", openDaily);
-  $("btn-settings").addEventListener("click", openSettings);
-  $("btn-renov").addEventListener("click", openRenov);
+  $("btn-shop").addEventListener("click", function () { openShop(); });
+  $("btn-daily").addEventListener("click", function () { openDaily(); });
+  $("btn-settings").addEventListener("click", function () { openSettings(false); });
+  $("btn-renov").addEventListener("click", function () { openRenov(); });
+  $("btn-map").addEventListener("click", function () { openMap(); });
 
   /* ================= LEVEL INTRO ================= */
   var pendingLevel = null, pendingPre = null;
@@ -214,6 +216,11 @@
     if (level.diff === "hard") { diffEl.classList.remove("hidden", "super"); diffEl.textContent = "🔥 Difícil"; }
     else if (level.diff === "super") { diffEl.classList.remove("hidden"); diffEl.classList.add("super"); diffEl.textContent = "🌋 Súper Difícil"; }
     else diffEl.classList.add("hidden");
+
+    if (level.bonus) {
+      var bTitle = $("intro-level");
+      bTitle.textContent = "🎁 NIVEL BONUS " + level.num;
+    }
 
     var box = $("intro-missions");
     box.innerHTML = "";
@@ -348,7 +355,13 @@
         }
         renderObjectives(objs);
       },
-      onScore: function () {},
+      onScore: function (score) {
+        var objs = RCBoard.objectives();
+        for (var i = 0; i < objs.length; i++) {
+          if (objs[i].kind === "score") objs[i].got = Math.min(objs[i].need, score);
+        }
+        renderObjectives(objs);
+      },
       onBoosterUsed: function (name) { S.boosters[name] = Math.max(0, (S.boosters[name] || 0) - 1); save(); renderBoosters(); },
       onWin: function (score) { setTimeout(function () { winLevel(level, score); }, 600); },
       onLose: function (score) { setTimeout(function () { loseLevel(level, score); }, 600); },
@@ -458,6 +471,25 @@
 
   function loseLevel(level, score) {
     RCBoard.setState("result");
+    /* El nivel bonus nunca se pierde: paga monedas por lo juntado */
+    if (level.bonus) {
+      var coins = Math.floor(score / 15);
+      S.coins += coins;
+      if (level.num >= S.level) { S.level = level.num + 1; }
+      save();
+      $("result-title").textContent = "🎁 ¡Bonus Terminado!";
+      $("result-title").className = "win";
+      $("result-stars").innerHTML = "";
+      $("result-rewards").textContent = "+" + coins + " 🪙 ganados";
+      $("btn-result-next").textContent = "Continuar →";
+      $("btn-result-next").disabled = false;
+      resultPose = "celebrate";
+      resultAnimating = true;
+      RCAudio.sfx("coin");
+      goto("screen-result");
+      pendingWin = { level: level, bonusPass: true };
+      return;
+    }
     loseLife();
     S.streak = 0;
     save();
@@ -465,8 +497,8 @@
     $("result-title").className = "lose";
     $("result-stars").innerHTML = "";
     $("result-rewards").textContent = "Te quedaste sin movimientos";
-    $("btn-result-next").textContent = "🔄 Reintentar (+" + S.lives + " ❤️)";
-    $("btn-result-next").disabled = S.lives <= 0 && !S.settings.infLives;
+    $("btn-result-next").textContent = "🔄 Reintentar (" + S.lives + " ❤️)";
+    $("btn-result-next").disabled = S.lives <= 0 && !S.dev;
     resultPose = "sad";
     resultAnimating = true;
     RCAudio.sfx("lose");
@@ -496,8 +528,10 @@
       return;
     }
     if (pendingWin) {
-      S.level = pendingWin.level.num + 1;
-      save();
+      if (pendingWin.level.num >= S.level) {
+        S.level = pendingWin.level.num + 1;
+        save();
+      }
       openIntro(RCLevels.genLevel(S.level));
     } else {
       openIntro(RCLevels.genLevel(S.level));
@@ -598,12 +632,14 @@
   }
 
   function buyItem(item) {
-    if (item.starPrice) {
-      if (S.stars < item.starPrice) { toast("⭐ Estrellas insuficientes"); return; }
-      S.stars -= item.starPrice;
-    } else {
-      if (S.coins < item.price) { toast("🪙 Monedas insuficientes"); return; }
-      S.coins -= item.price;
+    if (!S.dev) {
+      if (item.starPrice) {
+        if (S.stars < item.starPrice) { toast("⭐ Estrellas insuficientes"); return; }
+        S.stars -= item.starPrice;
+      } else {
+        if (S.coins < item.price) { toast("🪙 Monedas insuficientes"); return; }
+        S.coins -= item.price;
+      }
     }
     var g = item.give;
     if (g.booster) S.boosters[g.booster] = (S.boosters[g.booster] || 0) + g.n;
@@ -681,8 +717,7 @@
     $("set-sfx").value = S.settings.sfx * 100;
     $("set-vib").textContent = S.settings.vib ? "SÍ" : "NO";
     $("set-vib").classList.toggle("on", S.settings.vib);
-    $("set-inf").textContent = S.settings.infLives ? "SÍ" : "NO";
-    $("set-inf").classList.toggle("on", S.settings.infLives);
+    $("set-key").value = "";
     $("set-body").value = S.custom.body;
     $("set-hair").value = S.custom.hair;
     $("set-beard").value = S.custom.beard;
@@ -710,10 +745,23 @@
     this.classList.toggle("on", S.settings.vib);
     vibrate(30);
   });
-  $("set-inf").addEventListener("click", function () {
-    S.settings.infLives = !S.settings.infLives;
-    this.textContent = S.settings.infLives ? "SÍ" : "NO";
-    this.classList.toggle("on", S.settings.infLives);
+
+  $("btn-key").addEventListener("click", function () {
+    var key = $("set-key").value.trim().toLowerCase();
+    if (key === "manu") {
+      if (!S.dev) {
+        S.dev = true;
+        save();
+        toast("🔓 Modo desarrollador activado: compras gratis y vidas infinitas");
+        RCAudio.sfx("win");
+      } else {
+        toast("🔓 El modo desarrollador ya está activo");
+      }
+      updateHud();
+    } else if (key !== "") {
+      toast("❌ Clave incorrecta");
+    }
+    $("set-key").value = "";
   });
   ["set-body", "set-hair", "set-beard", "set-cloth"].forEach(function (id) {
     $(id).addEventListener("change", function () { vibrate(20); });
@@ -763,6 +811,32 @@
     goto("screen-renov");
   }
   $("btn-renov-close").addEventListener("click", function () { goto("screen-home"); updateHud(); });
+
+  /* ================= MAPA DE NIVELES ================= */
+  function openMap() {
+    var grid = $("map-grid");
+    grid.innerHTML = "";
+    for (var n = 1; n <= S.level; n++) {
+      (function (num) {
+        var lv = RCLevels.genLevel(num);
+        var cell = document.createElement("div");
+        var stars = S.levelStars[num] || 0;
+        cell.className = "map-cell" +
+          (lv.bonus ? " bonus" : "") +
+          (stars > 0 ? " done" : "") +
+          (num === S.level ? " current" : "");
+        var starTxt = lv.bonus ? "🎁" : (stars > 0 ? new Array(stars + 1).join("⭐") : "☆☆☆");
+        cell.innerHTML = "<b>" + (lv.bonus ? "Bonus" : num) + "</b><small>" + starTxt + "</small>";
+        cell.addEventListener("click", function () {
+          if (!S.dev && S.lives <= 0 && num >= S.level) { toast("💔 Sin vidas"); return; }
+          openIntro(RCLevels.genLevel(num));
+        });
+        grid.appendChild(cell);
+      })(n);
+    }
+    goto("screen-map");
+  }
+  $("btn-map-close").addEventListener("click", function () { goto("screen-home"); updateHud(); });
 
   /* ================= INPUT DEL JUEGO ================= */
   var touchStart = null;
@@ -816,7 +890,7 @@
       RCBoard.update(dt);
       RCScenes.drawSky(ctx, W, H, tod);
       RCScenes.drawScene(ctx, W, H, zone.id, tod);
-      ctx.fillStyle = "rgba(8,10,28,0.45)";
+      ctx.fillStyle = "rgba(6,8,22,0.74)";
       ctx.fillRect(0, 0, W, H);
       RCBoard.draw(ctx);
     } else if (current === "screen-home") {

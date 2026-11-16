@@ -4,7 +4,7 @@
 
   var TILE_NAMES = ["☕ Café", "🥃 Ron", "🥭 Mango", "🥁 Tambor", "🦋 Mariposa", "🍃 Tabaco"];
   var TILE_ICONS = ["☕", "🥃", "🥭", "🥁", "🦋", "🍃"];
-  var TILE_COLORS = ["#8a5a2a", "#d49020", "#ff9a3c", "#e63946", "#3a9bdc", "#4a9e4f"];
+  var TILE_COLORS = ["#7a4a21", "#8e44ad", "#ff8c00", "#e63946", "#3a9bdc", "#3f9e4f"];
 
   function seeded(n) {
     var s = n * 9301 + 49297;
@@ -14,11 +14,47 @@
     };
   }
 
+  /* Formas del tablero: celdas válidas (el tablero no siempre es cuadrado) */
+  var ROWS = 8, COLS = 7;
+  var SHAPES = ["full", "diamond", "cruz", "reloj", "marco"];
+
+  function shapeMask(shape) {
+    var m = [];
+    for (var r = 0; r < ROWS; r++) {
+      m.push([]);
+      for (var c = 0; c < COLS; c++) {
+        var ok = true;
+        if (shape === "diamond") ok = Math.abs(r - 3.5) / 4.4 + Math.abs(c - 3) / 3.6 <= 1.18;
+        else if (shape === "cruz") ok = (r >= 2 && r <= 5) || (c >= 2 && c <= 4);
+        else if (shape === "reloj") ok = Math.abs(c - 3) <= 3 - Math.abs(r - 3.5) * 0.52;
+        else if (shape === "marco") ok = (r === 0 || r === 7 || c === 0 || c === 6) || (r >= 3 && r <= 4 && c >= 2 && c <= 4);
+        m[r].push(ok);
+      }
+    }
+    return m;
+  }
+
+  function shapeFor(num) {
+    if (num < 8) return "full";
+    return SHAPES[num % SHAPES.length];
+  }
+
   /* Genera la configuración de un nivel de forma determinista */
   function genLevel(num) {
     var rnd = seeded(num * 7919);
     var country = num <= 100 ? "cuba" : "mexico";
     var local = num <= 100 ? num : num - 100;
+
+    /* Niveles bonus en los cierres: 25, 50, 75, 125, 150, 175... (100 es el viaje) */
+    if (num % 25 === 0 && num !== 100 && num !== 200) {
+      return {
+        num: num, country: country, diff: "bonus", bonus: true,
+        shape: shapeFor(num), moves: 22, types: 6, boxes: 0, ice: 0,
+        objectives: [{ kind: "score", need: 1200 + num * 25, got: 0 }],
+        starThresholds: [0, 0, 0],
+        coinsReward: 250 + num * 2
+      };
+    }
 
     var diff = "normal";
     if (num % 50 === 0) diff = "super";
@@ -59,6 +95,7 @@
       num: num,
       country: country,
       diff: diff,
+      shape: shapeFor(num),
       moves: moves,
       types: types,
       boxes: boxes,
@@ -77,6 +114,7 @@
     if (obj.kind === "collect") return { icon: TILE_ICONS[obj.type], text: "Junta " + obj.need + " de " + TILE_NAMES[obj.type] };
     if (obj.kind === "box") return { icon: "📦", text: "Rompe " + obj.need + " cajas de madera" };
     if (obj.kind === "ice") return { icon: "🧊", text: "Derrite " + obj.need + " capas de hielo" };
+    if (obj.kind === "score") return { icon: "🪙", text: "Junta " + obj.need + " puntos para ganar monedas" };
     return { icon: "⭐", text: "Objetivo" };
   }
 
@@ -141,6 +179,10 @@
     TILE_ICONS: TILE_ICONS,
     TILE_COLORS: TILE_COLORS,
     genLevel: genLevel,
+    shapeMask: shapeMask,
+    shapeFor: shapeFor,
+    ROWS: ROWS,
+    COLS: COLS,
     missionText: missionText,
     RENOVATIONS: RENOVATIONS,
     SHOP: SHOP,

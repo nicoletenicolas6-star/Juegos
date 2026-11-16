@@ -51,7 +51,10 @@
     <div class="home-title-box">
       <div class="country-badge" id="country-badge">🇨🇺 CUBA</div>
       <div class="zone-name" id="zone-name">Malecón Habanero</div>
-      <button class="btn btn-mini" id="btn-renov">🏰 Renovar</button>
+      <div class="home-mini-btns">
+        <button class="btn btn-mini" id="btn-renov">🏰 Renovar</button>
+        <button class="btn btn-mini" id="btn-map">🗺️ Niveles</button>
+      </div>
     </div>
     <div class="home-buttons">
       <button class="btn btn-teal btn-round" id="btn-shop">🛒<small>Tienda</small></button>
@@ -102,6 +105,16 @@
     <button class="booster pointer-on" data-b="arrow" id="b-arrow"><span>🏹</span><em id="c-arrow">0</em></button>
     <button class="booster pointer-on" data-b="cannon" id="b-cannon"><span>💥</span><em id="c-cannon">0</em></button>
     <button class="booster pointer-on" data-b="hat" id="b-hat"><span>🎩</span><em id="c-hat">0</em></button>
+  </div>
+</div>
+
+<!-- ============ MAPA DE NIVELES ============ -->
+<div id="screen-map" class="screen hidden">
+  <div class="panel map-panel">
+    <h2>🗺️ Niveles</h2>
+    <p class="renov-sub">Repite niveles ganados para recuperar ⭐ estrellas. Los 🎁 bonus dan monedas extra.</p>
+    <div id="map-grid" class="map-grid"></div>
+    <button class="btn btn-grey btn-big" id="btn-map-close">Cerrar</button>
   </div>
 </div>
 
@@ -156,7 +169,7 @@
     <div class="set-row"><span>🎵 Música</span><input type="range" id="set-music" min="0" max="100" value="60"></div>
     <div class="set-row"><span>🔊 Efectos</span><input type="range" id="set-sfx" min="0" max="100" value="80"></div>
     <div class="set-row"><span>📳 Vibración</span><button class="toggle on" id="set-vib">SÍ</button></div>
-    <div class="set-row"><span>♾️ Vidas infinitas</span><button class="toggle" id="set-inf">NO</button></div>
+    <div class="set-row"><span>🔑 Clave</span><input type="password" id="set-key" placeholder="····" autocomplete="off"><button class="btn btn-mini" id="btn-key">OK</button></div>
     <h3>👑 Tu personaje</h3>
     <div class="set-row"><span>Cuerpo</span>
       <select id="set-body"><option value="normal">Normal</option><option value="fat">Gordo</option><option value="thin">Flaco</option></select>

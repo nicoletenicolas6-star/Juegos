@@ -23,8 +23,10 @@
 
   function start(level, preBooster, callbacks) {
     cb = callbacks || {};
+    var mask = RCLevels.shapeMask(level.shape || "full");
     board = {
       cfg: level,
+      mask: mask,
       grid: [],
       lock: false,
       over: false,
@@ -44,6 +46,7 @@
     for (var r = 0; r < ROWS; r++) {
       g.push([]);
       for (var c = 0; c < COLS; c++) {
+        if (!mask[r][c]) { g[r].push(null); continue; }
         var t;
         do { t = makeTile(rndType(level.types)); } while (createsMatch(g, r, c, t.type));
         g[r].push(t);
@@ -51,7 +54,7 @@
     }
     /* Obstáculos */
     var spots = [];
-    for (var r2 = 2; r2 < ROWS; r2++) for (var c2 = 0; c2 < COLS; c2++) spots.push([r2, c2]);
+    for (var r2 = 2; r2 < ROWS; r2++) for (var c2 = 0; c2 < COLS; c2++) if (mask[r2][c2]) spots.push([r2, c2]);
     shuffle(spots);
     var si = 0;
     for (var b = 0; b < level.boxes && si < spots.length; b++, si++) {
@@ -268,6 +271,7 @@
 
       if (popped > 0) {
         board.score += popped * 30 * mult;
+        updateScoreObjective();
         cb.onScore && cb.onScore(board.score);
         if (cascade > 1) {
           cb.floatText && cb.floatText("¡COMBO x" + cascade + "! 🔥");
@@ -280,6 +284,17 @@
       swapCell = null;
     }
     board.cascade = 0;
+  }
+
+  function updateScoreObjective() {
+    var objs = board.cfg.objectives;
+    for (var i = 0; i < objs.length; i++) {
+      if (objs[i].kind === "score") {
+        var before = objs[i].got;
+        objs[i].got = Math.min(objs[i].need, board.score);
+        if (objs[i].got > before && cb.onObjective) cb.onObjective("score", objs[i].got - before);
+      }
+    }
   }
 
   function inCells(cells, p) {
@@ -483,29 +498,29 @@
     await resolveBoard(null);
   }
 
-  /* ---------- Gravedad ---------- */
+  /* ---------- Gravedad (respeta las formas del tablero) ---------- */
   async function applyGravity() {
     var fell = false;
     for (var c = 0; c < COLS; c++) {
-      var write = ROWS - 1;
+      var tiles = [], slots = [];
       for (var r = ROWS - 1; r >= 0; r--) {
-        var t = board.grid[r][c];
-        if (t) {
-          if (write !== r) {
-            board.grid[write][c] = t;
-            board.grid[r][c] = null;
-            t.y = py(write);
-            fell = true;
-          }
-          write--;
-        }
+        if (!board.mask[r][c]) continue;
+        slots.push(r);
+        if (board.grid[r][c]) { tiles.push({ t: board.grid[r][c], from: r }); board.grid[r][c] = null; }
       }
-      for (var n = write; n >= 0; n--) {
-        var nt = makeTile(rndType(board.cfg.types));
-        nt.y = py(n) - (write + 2) * board.cell - board.cell;
-        nt.x = px(c);
-        board.grid[n][c] = nt;
-        fell = true;
+      for (var s = 0; s < slots.length; s++) {
+        var target = slots[s];
+        if (s < tiles.length) {
+          var pair = tiles[s];
+          board.grid[target][c] = pair.t;
+          if (pair.from !== target) { pair.t.y = py(target); fell = true; }
+        } else {
+          var nt = makeTile(rndType(board.cfg.types));
+          nt.x = px(c);
+          nt.y = py(target) - (slots.length - s + 1) * board.cell;
+          board.grid[target][c] = nt;
+          fell = true;
+        }
       }
     }
     if (fell) {
@@ -519,6 +534,7 @@
     var c = Math.floor((x - board.boardX) / board.cell);
     var r = Math.floor((y - board.boardY) / board.cell);
     if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return null;
+    if (!board.mask[r][c]) return null;
     return { r: r, c: c };
   }
 
@@ -767,11 +783,11 @@
     var pad = 8;
     var bx = board.boardX - pad, by = board.boardY - pad;
     var bw = board.cell * COLS + pad * 2, bh = board.cell * ROWS + pad * 2;
-    ctx.fillStyle = "rgba(10,14,35,0.55)";
+    ctx.fillStyle = "rgba(8,10,26,0.82)";
     roundRectPath(ctx, bx, by, bw, bh, 16);
     ctx.fill();
-    ctx.strokeStyle = "rgba(255,215,94,0.5)";
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "rgba(255,215,94,0.65)";
+    ctx.lineWidth = 3;
     roundRectPath(ctx, bx, by, bw, bh, 16);
     ctx.stroke();
 
@@ -908,25 +924,32 @@
       grad.addColorStop(0, "#ffe9a8");
       grad.addColorStop(1, "#e8a020");
     } else {
-      grad.addColorStop(0, lighten(col, 40));
-      grad.addColorStop(1, col);
+      grad.addColorStop(0, lighten(col, 22));
+      grad.addColorStop(1, shade2(col, -18));
     }
     ctx.fillStyle = grad;
     roundRectPath(ctx, x + inset, y + inset, size, size, s * 0.22);
     ctx.fill();
-    ctx.strokeStyle = "rgba(0,0,0,0.25)";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(255,255,255,0.75)";
+    ctx.lineWidth = 2.5;
     roundRectPath(ctx, x + inset, y + inset, size, size, s * 0.22);
     ctx.stroke();
-    /* brillo */
-    ctx.fillStyle = "rgba(255,255,255,0.35)";
-    roundRectPath(ctx, x + inset + size * 0.12, y + inset + size * 0.08, size * 0.76, size * 0.3, s * 0.15);
+    ctx.strokeStyle = "rgba(0,0,0,0.35)";
+    ctx.lineWidth = 1.5;
+    roundRectPath(ctx, x + inset + 2, y + inset + 2, size - 4, size - 4, s * 0.2);
+    ctx.stroke();
+    /* brillo suave */
+    ctx.fillStyle = "rgba(255,255,255,0.22)";
+    roundRectPath(ctx, x + inset + size * 0.12, y + inset + size * 0.08, size * 0.76, size * 0.26, s * 0.15);
     ctx.fill();
 
     var icon = isPU ? PU_ICON[tile.pu] : RCLevels.TILE_ICONS[tile.type];
     ctx.font = (s * 0.52) + "px serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(0,0,0,0.45)";
+    ctx.strokeText(icon, x + s / 2, y + s * 0.56);
     ctx.fillText(icon, x + s / 2, y + s * 0.56);
 
     if (tile.pu === PU.BALL) {
@@ -965,6 +988,10 @@
     var g = Math.min(255, ((n >> 8) & 255) + amt);
     var b = Math.min(255, (n & 255) + amt);
     return "rgb(" + r + "," + g + "," + b + ")";
+  }
+
+  function shade2(hex, amt) {
+    return lighten(hex, amt);
   }
 
   function neighborPoint(x, y, dx, dy) {
