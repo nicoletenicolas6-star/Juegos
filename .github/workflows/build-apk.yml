@@ -27,17 +27,17 @@ jobs:
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon
 
-      - name: Upload APK artifact
+      - name: Build release APK
+        run: gradle assembleRelease --no-daemon
+
+      - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: esquiva-debug-apk
+          name: reino-cubano-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload release APK artifact
-        run: gradle assembleRelease --no-daemon
-
-      - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
-          name: esquiva-release-apk
+          name: reino-cubano-release-apk
           path: app/build/outputs/apk/release/app-release-unsigned.apk
