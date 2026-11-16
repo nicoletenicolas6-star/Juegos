@@ -660,6 +660,35 @@
   function renderShopItems() {
     var box = $("shop-items");
     box.innerHTML = "";
+    if (S.dev) {
+      var packs = [
+        { icon: "💵", name: "Sobre de Monedas", desc: "🦲 1,000 monedas · $0.99 USD", coins: 1000 },
+        { icon: "💰", name: "Bolsa de Monedas", desc: "🦲 6,000 monedas · $4.99 USD", coins: 6000 },
+        { icon: "🏦", name: "Cofre de Monedas", desc: "🦲 14,000 monedas · $9.99 USD", coins: 14000 }
+      ];
+      var devHead = document.createElement("div");
+      devHead.className = "dev-packs-head";
+      devHead.textContent = "🧪 Modo desarrollador — pagos simulados";
+      box.appendChild(devHead);
+      packs.forEach(function (pk) {
+        var row = document.createElement("div");
+        row.className = "shop-item dev-pack";
+        row.innerHTML =
+          '<span class="si-icon">' + pk.icon + '</span>' +
+          '<span class="si-info"><b>' + pk.name + '</b><small>' + pk.desc + '</small></span>' +
+          '<button class="btn btn-teal">Comprar</button>';
+        row.querySelector("button").addEventListener("click", function () {
+          S.coins += pk.coins;
+          save();
+          RCAudio.sfx("coin");
+          vibrate(60);
+          toast("🧪 Pago simulado: +" + pk.coins + " 🪙");
+          $("shop-coins").textContent = S.coins;
+          updateHud();
+        });
+        box.appendChild(row);
+      });
+    }
     RCLevels.SHOP[S.country].forEach(function (item) {
       var row = document.createElement("div");
       row.className = "shop-item";

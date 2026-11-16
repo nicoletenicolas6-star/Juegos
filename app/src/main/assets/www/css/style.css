@@ -239,8 +239,11 @@ html, body {
 .shop-item .si-info b { display: block; font-size: 15px; }
 .shop-item .si-info small { color: #9fc9ff; font-size: 12px; }
 .shop-item .btn { padding: 8px 14px; font-size: 14px; }
+.dev-packs-head { text-align: center; font-size: 12px; font-weight: 800; color: #4fd2ff; background: rgba(79,210,255,0.12); border: 1px dashed rgba(79,210,255,0.5); border-radius: 10px; padding: 6px; margin-bottom: 4px; }
+.dev-pack { border-color: rgba(79,210,255,0.45); }
 
 /* ---------- Daily ---------- */
+.daily-panel .btn { display: block; width: 100%; margin-top: 12px; }
 .daily-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
 .daily-cell {
   background: rgba(0,0,0,0.35); border: 2px solid rgba(255,255,255,0.2);

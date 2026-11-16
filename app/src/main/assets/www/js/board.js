@@ -277,7 +277,7 @@
         cb.onScore && cb.onScore(board.score);
         if (cascade > 1) {
           cb.floatText && cb.floatText("¡COMBO x" + cascade + "! 🔥");
-          board.shake = Math.min(14, 4 + cascade * 3);
+          board.shake = Math.min(8, 2 + cascade * 2);
           board.comboText = { txt: "¡COMBO x" + cascade + "! 🔥", t: 0, big: cascade >= 3 };
           board.rings.push({ x: window.innerWidth / 2, y: board.boardY + board.cell * ROWS / 2, r: 10, max: board.cell * 3, life: 1, color: "255,159,67" });
         }
@@ -441,7 +441,7 @@
     var ta = board.grid[ra][ca], tb = board.grid[rb][cb2];
     var pa = ta.pu, pb = tb.pu;
     board.grid[ra][ca] = null; board.grid[rb][cb2] = null;
-    board.shake = 16;
+    board.shake = 10;
     board.flash = 1;
     cb.floatText && cb.floatText("¡COMBO ÉPICO! ✨");
     board.comboText = { txt: "¡COMBO ÉPICO! ✨", t: 0, big: true };
@@ -520,11 +520,14 @@
         if (s < tiles.length) {
           var pair = tiles[s];
           board.grid[target][c] = pair.t;
-          if (pair.from !== target) { pair.t.y = py(target); fell = true; }
+          if (pair.from !== target) {
+            pair.t.oy = py(pair.from) - py(target);
+            fell = true;
+          }
         } else {
           var nt = makeTile(rndType(board.cfg.types));
           nt.x = px(c);
-          nt.y = py(target) - (slots.length - s + 1) * board.cell;
+          nt.oy = -(slots.length - s + 1) * board.cell;
           board.grid[target][c] = nt;
           fell = true;
         }
@@ -532,7 +535,16 @@
     }
     if (fell) {
       RCAudio.sfx("swap");
-      await sleep(300);
+      var guard = 0;
+      while (guard++ < 40) {
+        var moving = false;
+        for (var rr = 0; rr < ROWS && !moving; rr++) for (var cc = 0; cc < COLS && !moving; cc++) {
+          var tt = board.grid[rr][cc];
+          if (tt && tt.oy) moving = true;
+        }
+        if (!moving) break;
+        await sleep(16);
+      }
     }
   }
 
@@ -674,25 +686,30 @@
     if (name === "hammer") {
       RCAudio.sfx("hammer");
       board.hammerAnim = { x: px(c) + board.cell / 2, y: -80, ty: py(r) + board.cell / 2, t: 0 };
-      board.shake = 8;
-      await sleep(280);
+      await sleep(380);
+      board.shake = 10;
+      board.rings.push({ x: px(c) + board.cell / 2, y: py(r) + board.cell / 2, r: 10, max: board.cell * 2.5, life: 1, color: "255,255,255" });
       smashCell(r, c);
-      burst(px(c) + board.cell / 2, py(r) + board.cell / 2, "#a06a3a", 14);
+      burst(px(c) + board.cell / 2, py(r) + board.cell / 2, "#a06a3a", 20);
       await applyGravity();
       await resolveBoard(null);
     } else if (name === "arrow") {
       RCAudio.sfx("arrow");
       board.arrowAnim = { r: r, t: 0 };
       board.shake = 6;
-      await sleep(200);
+      await sleep(320);
       for (var i = 0; i < COLS; i++) smashCell(r, i);
       await applyGravity();
       await resolveBoard(null);
     } else if (name === "cannon") {
       RCAudio.sfx("cannon");
-      board.shake = 8;
+      board.cannonAnim = { x: px(c) + board.cell / 2, ty: py(r) + board.cell / 2, t: 0 };
+      await sleep(500);
+      board.shake = 10;
       board.flash = 1;
+      board.rings.push({ x: px(c) + board.cell / 2, y: py(r) + board.cell / 2, r: 10, max: board.cell * 4, life: 1, color: "255,120,60" });
       for (var j = 0; j < ROWS; j++) smashCell(j, c);
+      burst(px(c) + board.cell / 2, py(r) + board.cell / 2, "#ff8c42", 22);
       await applyGravity();
       await resolveBoard(null);
     } else if (name === "hat") {
@@ -737,8 +754,19 @@
   /* ---------- Update & Draw ---------- */
   function update(dt) {
     if (!board) return;
-    board.shake *= 0.88;
+    board.shake *= 0.84;
     board.flash *= 0.92;
+    for (var r3 = 0; r3 < ROWS; r3++) for (var c3 = 0; c3 < COLS; c3++) {
+      var t4 = board.grid[r3] && board.grid[r3][c3];
+      if (t4 && t4.oy) {
+        t4.oy += (0 - t4.oy) * 0.22;
+        if (Math.abs(t4.oy) < 0.8) t4.oy = 0;
+      }
+    }
+    if (board.cannonAnim) {
+      board.cannonAnim.t += 0.05;
+      if (board.cannonAnim.t >= 1.8) board.cannonAnim = null;
+    }
     for (var i = board.particles.length - 1; i >= 0; i--) {
       var p = board.particles[i];
       p.x += p.vx; p.y += p.vy;
@@ -761,8 +789,8 @@
       if (rg.life <= 0) board.rings.splice(ri, 1);
     }
     if (board.hammerAnim) {
-      board.hammerAnim.t += 0.15;
-      if (board.hammerAnim.t >= 1) board.hammerAnim = null;
+      board.hammerAnim.t += 0.05;
+      if (board.hammerAnim.t >= 1.2) board.hammerAnim = null;
     }
     if (board.arrowAnim) {
       board.arrowAnim.t += 0.1;
@@ -789,7 +817,7 @@
     if (!board) return;
     var W = window.innerWidth, H = window.innerHeight;
     ctx.save();
-    if (board.shake > 0.5) ctx.translate((Math.random() - 0.5) * board.shake, (Math.random() - 0.5) * board.shake);
+    if (board.shake > 0.5) ctx.translate((Math.random() - 0.5) * board.shake * 0.7, (Math.random() - 0.5) * board.shake * 0.7);
 
     if (board.flash > 0.05) {
       ctx.fillStyle = "rgba(255,255,255," + Math.min(0.5, board.flash * 0.3) + ")";
@@ -895,28 +923,62 @@
     /* animaciones de boosters */
     if (board.hammerAnim) {
       var ha = board.hammerAnim;
-      var hy = -80 + (ha.ty + 80) * Math.min(ha.t * 1.4, 1);
-      ctx.font = (board.cell * 0.9) + "px serif";
+      var prog = Math.min(ha.t * 1.25, 1);
+      var hy = -80 + (ha.ty + 80) * prog;
+      ctx.save();
+      ctx.translate(ha.x, hy + board.cell * 0.5);
+      ctx.rotate(-0.7 + prog * 0.9);
+      ctx.font = (board.cell * 1.1) + "px serif";
       ctx.textAlign = "center";
-      ctx.fillText("🔨", ha.x, hy + board.cell * 0.6);
-      if (ha.t > 0.7) {
-        ctx.strokeStyle = "rgba(255,255,255,0.7)";
-        ctx.lineWidth = 3;
-        for (var s2 = 0; s2 < 5; s2++) {
-          var ang = s2 * 1.3 + ha.t * 6;
+      ctx.fillText("🔨", 0, 0);
+      ctx.restore();
+      if (ha.t > 0.68) {
+        var imp = (ha.t - 0.68) / 0.32;
+        ctx.globalAlpha = 1 - imp;
+        ctx.font = (board.cell * (0.9 + imp * 0.8)) + "px serif";
+        ctx.textAlign = "center";
+        ctx.fillText("💥", ha.x, ha.ty + board.cell * 0.35);
+        ctx.strokeStyle = "rgba(255,255,255," + (0.8 - imp * 0.8) + ")";
+        ctx.lineWidth = 4;
+        for (var s2 = 0; s2 < 7; s2++) {
+          var ang = s2 * 0.9 + ha.t * 6;
+          var len = board.cell * (0.35 + imp * 0.45);
           ctx.beginPath();
-          ctx.moveTo(ha.x, hy + board.cell * 0.3);
-          ctx.lineTo(ha.x + Math.cos(ang) * board.cell * 0.5, hy + board.cell * 0.3 + Math.sin(ang) * board.cell * 0.5);
+          ctx.moveTo(ha.x, ha.ty);
+          ctx.lineTo(ha.x + Math.cos(ang) * len, ha.ty + Math.sin(ang) * len);
           ctx.stroke();
         }
+        ctx.globalAlpha = 1;
+      }
+    }
+    if (board.cannonAnim) {
+      var ca2 = board.cannonAnim;
+      var cy = window.innerHeight + 40 - (window.innerHeight + 80 - ca2.ty) * Math.min(ca2.t, 1);
+      if (ca2.t < 1) {
+        ctx.font = (board.cell * 0.7) + "px serif";
+        ctx.textAlign = "center";
+        ctx.fillText("⚫", ca2.x, cy);
+        ctx.fillStyle = "rgba(255,255,255,0.25)";
+        ctx.beginPath();
+        ctx.arc(ca2.x, cy + board.cell * 0.5, board.cell * 0.12, 0, 7);
+        ctx.fill();
+      } else {
+        var ex = (ca2.t - 1) / 0.8;
+        ctx.globalAlpha = 1 - ex;
+        ctx.font = (board.cell * (1 + ex * 1.6)) + "px serif";
+        ctx.textAlign = "center";
+        ctx.fillText("💥", ca2.x, ca2.ty + board.cell * 0.3);
+        ctx.globalAlpha = 1;
       }
     }
     if (board.arrowAnim) {
       var aa = board.arrowAnim;
       var ax = board.boardX - board.cell + (board.cell * (COLS + 2)) * Math.min(aa.t, 1);
+      ctx.fillStyle = "rgba(255,215,94,0.35)";
+      ctx.fillRect(board.boardX, py(aa.r) + board.cell * 0.3, Math.max(ax - board.boardX, 0), board.cell * 0.4);
       ctx.font = (board.cell * 0.8) + "px serif";
       ctx.textAlign = "center";
-      ctx.globalAlpha = aa.t < 1 ? 1 : 1.4 - aa.t;
+      ctx.globalAlpha = aa.t < 1 ? 1 : Math.max(0, 1.4 - aa.t);
       ctx.fillText("🏹", ax, py(aa.r) + board.cell * 0.75);
       ctx.globalAlpha = 1;
     }
@@ -944,7 +1006,7 @@
   }
 
   function drawTile(ctx, tile, c, r, now) {
-    var x = px(c), y = py(r), s = board.cell;
+    var x = px(c), y = py(r) + (tile.oy || 0), s = board.cell;
     var inset = s * 0.07;
     var size = s - inset * 2;
 
