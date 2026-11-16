@@ -86,6 +86,10 @@
     if (S.settings.vib && navigator.vibrate) try { navigator.vibrate(ms); } catch (e) {}
   }
 
+  function showError(e) {
+    try { window.onerror(String(e && e.message || e), "main.js", 0, 0); } catch (x) {}
+  }
+
   /* ---------- Vidas ---------- */
   var LIFE_MS = 10 * 60 * 1000;
   function tickLives() {
@@ -124,8 +128,10 @@
 
   function splashLoop(ts) {
     if (current !== "screen-splash") return;
-    splashCtx.clearRect(0, 0, 220, 260);
-    RCChar.draw(splashCtx, 110, 240, 200, charCustom(), "dance", ts);
+    try {
+      splashCtx.clearRect(0, 0, 220, 260);
+      RCChar.draw(splashCtx, 110, 240, 200, charCustom(), "dance", ts);
+    } catch (e) { showError(e); }
     requestAnimationFrame(splashLoop);
   }
   requestAnimationFrame(splashLoop);
@@ -509,8 +515,10 @@
 
   function resultLoop(ts) {
     if (!resultAnimating) return;
-    resultCtx.clearRect(0, 0, 200, 220);
-    RCChar.draw(resultCtx, 100, 205, 190, charCustom(), resultPose, ts);
+    try {
+      resultCtx.clearRect(0, 0, 200, 220);
+      RCChar.draw(resultCtx, 100, 205, 190, charCustom(), resultPose, ts);
+    } catch (e) { showError(e); }
     requestAnimationFrame(resultLoop);
   }
 
@@ -880,28 +888,30 @@
   /* ================= LOOP PRINCIPAL ================= */
   var lastTs = 0;
   function loop(ts) {
-    var dt = Math.min(50, ts - lastTs);
-    lastTs = ts;
-    RCScenes.tick();
-    var tod = RCScenes.timeOfDay();
-    var zone = RCScenes.zoneFor(S.country, S.level);
+    try {
+      var dt = Math.min(50, ts - lastTs);
+      lastTs = ts;
+      RCScenes.tick();
+      var tod = RCScenes.timeOfDay();
+      var zone = RCScenes.zoneFor(S.country, S.level);
 
-    if (current === "screen-game") {
-      RCBoard.update(dt);
-      RCScenes.drawSky(ctx, W, H, tod);
-      RCScenes.drawScene(ctx, W, H, zone.id, tod);
-      ctx.fillStyle = "rgba(6,8,22,0.74)";
-      ctx.fillRect(0, 0, W, H);
-      RCBoard.draw(ctx);
-    } else if (current === "screen-home") {
-      RCScenes.drawSky(ctx, W, H, tod);
-      RCScenes.drawScene(ctx, W, H, zone.id, tod);
-      RCChar.draw(ctx, W / 2, H * 0.62, Math.min(W * 0.42, 240), charCustom(),
-        S.streak >= 3 ? "dance" : "idle", ts);
-    } else {
-      RCScenes.drawSky(ctx, W, H, tod);
-      RCScenes.drawScene(ctx, W, H, zone.id, tod);
-    }
+      if (current === "screen-game") {
+        RCBoard.update(dt);
+        RCScenes.drawSky(ctx, W, H, tod);
+        RCScenes.drawScene(ctx, W, H, zone.id, tod);
+        ctx.fillStyle = "rgba(6,8,22,0.74)";
+        ctx.fillRect(0, 0, W, H);
+        RCBoard.draw(ctx);
+      } else if (current === "screen-home") {
+        RCScenes.drawSky(ctx, W, H, tod);
+        RCScenes.drawScene(ctx, W, H, zone.id, tod);
+        RCChar.draw(ctx, W / 2, H * 0.62, Math.min(W * 0.42, 240), charCustom(),
+          S.streak >= 3 ? "dance" : "idle", ts);
+      } else {
+        RCScenes.drawSky(ctx, W, H, tod);
+        RCScenes.drawScene(ctx, W, H, zone.id, tod);
+      }
+    } catch (e) { showError(e); }
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);

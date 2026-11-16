@@ -7,21 +7,34 @@ android {
     namespace = "com.vibe.arcadegame"
     compileSdk = 34
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("../keystore/reino-cubano.keystore")
+            storePassword = "reinocubano2024"
+            keyAlias = "reinocubano"
+            keyPassword = "reinocubano2024"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.vibe.arcadegame"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 3
+        versionName = "2.1"
     }
 
     buildTypes {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
