@@ -116,6 +116,7 @@ html, body {
 .hud-top .icon-btn { margin-left: auto; }
 .home-bottom { width: 100%; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
 .home-title-box { text-align: center; }
+.home-vehicle { font-size: 13px; color: #9fe8b0; font-weight: 700; margin-top: 2px; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
 .home-mini-btns { display: flex; gap: 8px; justify-content: center; margin-top: 6px; }
 .set-row input[type=password] { width: 110px; padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid #d4a017; font-size: 14px; }
 .country-badge {
@@ -203,8 +204,13 @@ html, body {
   display: flex; align-items: center; justify-content: center;
 }
 .booster.locked { filter: grayscale(1); opacity: 0.4; }
+.booster.nostock { opacity: 0.55; }
 .booster.armed { border-color: #ffd75e; box-shadow: 0 0 18px rgba(255,215,94,0.7); animation: pulsePlay 1s infinite; }
 .booster:disabled { opacity: 0.35; }
+
+/* ---------- Pausa ---------- */
+.pause-panel .btn { display: block; width: 100%; margin-top: 12px; }
+.pause-panel h2 { margin-bottom: 16px; }
 
 /* ---------- Result ---------- */
 .result-panel h2 { font-size: 30px; }
@@ -215,6 +221,9 @@ html, body {
 .result-rewards { font-size: 17px; font-weight: 700; color: #9fe8b0; margin-bottom: 12px; min-height: 24px; }
 
 /* ---------- Shop ---------- */
+.shop-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+.shop-tab { background: linear-gradient(180deg,#4a4a6a,#2c2c48); border: 2px solid rgba(255,255,255,0.3); }
+.shop-tab.on { background: linear-gradient(180deg,#ffd75e,#e8a020); border-color: #ffe9a8; color: #3a2400; }
 .shop-country { font-size: 15px; color: #9fc9ff; }
 .shop-coins { color: #ffd75e; font-weight: 800; margin-bottom: 12px; font-size: 17px; }
 .shop-items { display: flex; flex-direction: column; gap: 9px; margin-bottom: 14px; }

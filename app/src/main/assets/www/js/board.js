@@ -783,7 +783,7 @@
     var pad = 8;
     var bx = board.boardX - pad, by = board.boardY - pad;
     var bw = board.cell * COLS + pad * 2, bh = board.cell * ROWS + pad * 2;
-    ctx.fillStyle = "rgba(8,10,26,0.82)";
+    ctx.fillStyle = "rgba(244,229,198,0.94)";
     roundRectPath(ctx, bx, by, bw, bh, 16);
     ctx.fill();
     ctx.strokeStyle = "rgba(255,215,94,0.65)";
@@ -794,7 +794,7 @@
     /* celdas */
     for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) {
       if ((r + c) % 2 === 0) {
-        ctx.fillStyle = "rgba(255,255,255,0.045)";
+        ctx.fillStyle = "rgba(120,80,30,0.10)";
         ctx.fillRect(px(c), py(r), board.cell, board.cell);
       }
     }
@@ -930,11 +930,11 @@
     ctx.fillStyle = grad;
     roundRectPath(ctx, x + inset, y + inset, size, size, s * 0.22);
     ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,0.75)";
+    ctx.strokeStyle = "rgba(70,40,12,0.6)";
     ctx.lineWidth = 2.5;
     roundRectPath(ctx, x + inset, y + inset, size, size, s * 0.22);
     ctx.stroke();
-    ctx.strokeStyle = "rgba(0,0,0,0.35)";
+    ctx.strokeStyle = "rgba(255,255,255,0.5)";
     ctx.lineWidth = 1.5;
     roundRectPath(ctx, x + inset + 2, y + inset + 2, size - 4, size - 4, s * 0.2);
     ctx.stroke();

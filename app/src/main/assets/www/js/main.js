@@ -25,7 +25,8 @@
     custom: { body: "normal", hair: "hair", beard: "beard", cloth: "#e63946" },
     settings: { music: 0.6, sfx: 0.8, vib: true },
     renovated: [], tutorials: [], country: "cuba",
-    levelStars: {}, dev: false
+    levelStars: {}, dev: false,
+    owned: [], vehicle: ""
   };
   var S = load();
 
@@ -55,8 +56,8 @@
   function hide(id) { $(id).classList.add("hidden"); }
 
   var screens = ["screen-splash", "screen-onboard", "screen-home", "screen-intro",
-    "screen-game", "screen-pause", "screen-result", "screen-shop", "screen-daily",
-    "screen-settings", "screen-travel", "screen-renov"];
+    "screen-game", "screen-map", "screen-pause", "screen-result", "screen-shop",
+    "screen-daily", "screen-settings", "screen-travel", "screen-renov"];
   var current = "screen-splash";
   function goto(id) {
     screens.forEach(function (s) { hide(s); });
@@ -198,6 +199,8 @@
     $("zone-name").textContent = S.name ? S.role + " " + S.name + " · " + zone.name : zone.name;
     $("btn-level-num").textContent = "Nivel " + S.level;
     $("btn-play").disabled = !S.dev && S.lives <= 0;
+    var veh = { car: "🚗 Almendrón esperando", moto: "🏍️ Moto lista", bici: "🚲 Bici lista" }[S.vehicle] || "";
+    $("home-vehicle").textContent = veh;
   }
 
   $("btn-play").addEventListener("click", function () {
@@ -395,7 +398,7 @@
       var el = $("b-" + b);
       var locked = S.level < unlockedAt[b];
       el.classList.toggle("locked", locked);
-      el.disabled = locked || (S.boosters[b] || 0) <= 0;
+      el.classList.toggle("nostock", (S.boosters[b] || 0) <= 0);
       $("c-" + b).textContent = S.boosters[b] || 0;
       el.classList.toggle("armed", armedBooster === b);
     });
@@ -405,7 +408,7 @@
   document.querySelectorAll(".booster").forEach(function (b) {
     b.addEventListener("click", function () {
       var name = b.getAttribute("data-b");
-      if (b.disabled) { toast("🔒 Se desbloquea en el nivel " + RCLevels.BOOSTER_UNLOCK[name]); return; }
+      if (S.level < RCLevels.BOOSTER_UNLOCK[name]) { toast("🔒 " + RCLevels.BOOSTER_INFO[name].name + " se desbloquea en el nivel " + RCLevels.BOOSTER_UNLOCK[name]); return; }
       if ((S.boosters[name] || 0) <= 0) { toast("No tienes este potenciador. ¡Visita la tienda!"); return; }
       armedBooster = RCBoard.armBooster(name) ? name : null;
       renderBoosters();
@@ -617,9 +620,22 @@
   }
 
   /* ================= TIENDA ================= */
+  var shopTab = "items";
   function openShop() {
     $("shop-coins").textContent = S.coins;
     $("shop-country").textContent = S.country === "mexico" ? "de México 🇲🇽" : "de Cuba 🇨🇺";
+    renderShop();
+    goto("screen-shop");
+  }
+  function renderShop() {
+    var itemsBox = $("shop-items"), styleBox = $("style-items");
+    itemsBox.classList.toggle("hidden", shopTab !== "items");
+    styleBox.classList.toggle("hidden", shopTab !== "style");
+    $("tab-items").classList.toggle("on", shopTab === "items");
+    $("tab-style").classList.toggle("on", shopTab === "style");
+    if (shopTab === "items") renderShopItems(); else renderShopStyle();
+  }
+  function renderShopItems() {
     var box = $("shop-items");
     box.innerHTML = "";
     RCLevels.SHOP[S.country].forEach(function (item) {
@@ -636,8 +652,47 @@
       });
       box.appendChild(row);
     });
-    goto("screen-shop");
   }
+  function renderShopStyle() {
+    var box = $("style-items");
+    box.innerHTML = "";
+    RCLevels.STYLE.forEach(function (item) {
+      var row = document.createElement("div");
+      row.className = "shop-item";
+      var owned = S.owned.indexOf(item.id) >= 0 || item.price === 0;
+      var equipped = false;
+      for (var k in item.set) {
+        if (k === "vehicle") equipped = S.vehicle === item.set[k];
+        else equipped = S.custom[k] === item.set[k];
+      }
+      var btnTxt = equipped ? "✔ Puesto" : (owned ? "Poner" : (item.price === 0 ? "Gratis" : item.price + " 🪙"));
+      var afford = item.price === 0 || S.coins >= item.price;
+      row.innerHTML =
+        '<span class="si-icon">' + item.icon + '</span>' +
+        '<span class="si-info"><b>' + item.name + '</b><small>' + item.desc + '</small></span>' +
+        '<button class="btn ' + (equipped ? "btn-grey" : (owned || afford ? "btn-gold" : "btn-grey")) + '">' + btnTxt + '</button>';
+      row.querySelector("button").addEventListener("click", function () {
+        if (equipped) return;
+        if (!owned && !S.dev && item.price > S.coins) { toast("🪙 Monedas insuficientes"); return; }
+        if (!owned && !S.dev) S.coins -= item.price;
+        if (S.owned.indexOf(item.id) < 0) S.owned.push(item.id);
+        for (var k2 in item.set) {
+          if (k2 === "vehicle") S.vehicle = item.set[k2];
+          else S.custom[k2] = item.set[k2];
+        }
+        save();
+        RCAudio.sfx("coin");
+        vibrate(40);
+        toast(equipped ? "" : "✅ ¡" + item.name + (owned ? " equipado!" : " comprado!"));
+        $("shop-coins").textContent = S.coins;
+        renderShop();
+        updateHud();
+      });
+      box.appendChild(row);
+    });
+  }
+  $("tab-items").addEventListener("click", function () { shopTab = "items"; renderShop(); });
+  $("tab-style").addEventListener("click", function () { shopTab = "style"; renderShop(); });
 
   function buyItem(item) {
     if (!S.dev) {

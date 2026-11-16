@@ -154,6 +154,27 @@
     ]
   };
 
+  /* Tienda de estilo: peinados, barba, cuerpo, ropa y vehiculos del rey/reina */
+  var STYLE = [
+    { id: "hair-hair", icon: "💇", name: "Pelo Clásico", desc: "Peinado tradicional", price: 150, set: { hair: "hair" } },
+    { id: "hair-bald", icon: "🧑‍🦲", name: "Calvo", desc: "Ni un pelo", price: 100, set: { hair: "bald" } },
+    { id: "hair-afro", icon: "🕺", name: "Afro", desc: "¡Estilo disco!", price: 250, set: { hair: "afro" } },
+    { id: "beard-none", icon: "🪒", name: "Afeitado", desc: "Cara limpia", price: 80, set: { beard: "none" } },
+    { id: "beard-beard", icon: "🧔", name: "Barba", desc: "Barba de abuelo", price: 120, set: { beard: "beard" } },
+    { id: "beard-mustache", icon: "👨", name: "Bigote", desc: "Bigote de sonero", price: 120, set: { beard: "mustache" } },
+    { id: "body-thin", icon: "🤸", name: "Flaco", desc: "Cuerpo atlético", price: 200, set: { body: "thin" } },
+    { id: "body-fat", icon: "🍔", name: "Gordo", desc: "Panza de rey", price: 200, set: { body: "fat" } },
+    { id: "cloth-red", icon: "👕", name: "Traje Rojo", desc: "El de siempre", price: 150, set: { cloth: "#e63946" } },
+    { id: "cloth-blue", icon: "👕", name: "Traje Azul", desc: "Color del mar", price: 150, set: { cloth: "#2a6fdb" } },
+    { id: "cloth-green", icon: "👕", name: "Traje Verde", desc: "Color del tabaco", price: 150, set: { cloth: "#1a9e4b" } },
+    { id: "cloth-purple", icon: "👕", name: "Traje Morado", desc: "Muy real", price: 150, set: { cloth: "#8e44ad" } },
+    { id: "cloth-gold", icon: "🤴", name: "Traje Dorado", desc: "Solo para reyes", price: 400, set: { cloth: "#d4a017" } },
+    { id: "veh-none", icon: "🚶", name: "A Pie", desc: "Sin vehículo", price: 0, set: { vehicle: "" } },
+    { id: "veh-bici", icon: "🚲", name: "Bicicleta", desc: "Ecológica, se ve en tu pueblo", price: 200, set: { vehicle: "bici" } },
+    { id: "veh-moto", icon: "🏍️", name: "Moto Cubana", desc: "Rugidora, se ve en tu pueblo", price: 400, set: { vehicle: "moto" } },
+    { id: "veh-car", icon: "🚗", name: "Almendrón Clásico", desc: "El auto de La Habana, en tu pueblo", price: 500, set: { vehicle: "car" } }
+  ];
+
   /* Recompensas diarias: día 7 = COMBO */
   var DAILY = [
     { icon: "🪙", label: "100", give: { coins: 100 } },
@@ -186,6 +207,7 @@
     missionText: missionText,
     RENOVATIONS: RENOVATIONS,
     SHOP: SHOP,
+    STYLE: STYLE,
     DAILY: DAILY,
     BOOSTER_UNLOCK: BOOSTER_UNLOCK,
     BOOSTER_INFO: BOOSTER_INFO

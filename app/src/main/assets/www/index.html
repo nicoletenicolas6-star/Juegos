@@ -63,6 +63,7 @@ window.onerror = function (msg, src, line, col) {
     <div class="home-title-box">
       <div class="country-badge" id="country-badge">🇨🇺 CUBA</div>
       <div class="zone-name" id="zone-name">Malecón Habanero</div>
+      <div class="home-vehicle" id="home-vehicle"></div>
       <div class="home-mini-btns">
         <button class="btn btn-mini" id="btn-renov">🏰 Renovar</button>
         <button class="btn btn-mini" id="btn-map">🗺️ Niveles</button>
@@ -159,7 +160,12 @@ window.onerror = function (msg, src, line, col) {
   <div class="panel shop-panel">
     <h2>🛒 Tienda <span id="shop-country" class="shop-country">de Cuba</span></h2>
     <p class="shop-coins">Tienes: 🪙 <span id="shop-coins">0</span></p>
+    <div class="shop-tabs">
+      <button class="btn btn-mini shop-tab on" id="tab-items">🛒 Artículos</button>
+      <button class="btn btn-mini shop-tab" id="tab-style">👸 Estilo</button>
+    </div>
     <div id="shop-items" class="shop-items"></div>
+    <div id="style-items" class="shop-items hidden"></div>
     <button class="btn btn-grey btn-big" id="btn-shop-close">Cerrar</button>
   </div>
 </div>
