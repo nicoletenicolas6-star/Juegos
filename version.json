@@ -1,7 +1,7 @@
 {
-  "version": "0.3.3",
-  "codigo": 6,
+  "version": "0.3.4",
+  "codigo": 7,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24051769,
-  "notas": "Iconos en el menú, engranaje de Ajustes, código secreto manu y mapa de niveles más bonito. Si no hay conexión, el aviso ya no menciona GitHub."
+  "tamano": 24055885,
+  "notas": "Instalador corregido: reutiliza el APK ya descargado, reintenta solo tras conceder el permiso y muestra el error concretamente. Duelo de reyes con espadas animadas. Instala esta versión una vez a mano; las siguientes vendrán solas."
 }
