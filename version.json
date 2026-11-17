@@ -1,7 +1,7 @@
 {
-  "version": "0.3.4",
-  "codigo": 7,
+  "version": "0.3.5",
+  "codigo": 8,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24055885,
-  "notas": "Instalador corregido: reutiliza el APK ya descargado, reintenta solo tras conceder el permiso y muestra el error concretamente. Duelo de reyes con espadas animadas. Instala esta versión una vez a mano; las siguientes vendrán solas."
+  "tamano": 24080957,
+  "notas": "Barra de corriente hacia la termoeléctrica, apagón con luz que sigue a la ficha tocada, vela/linterna/ecoflow comprables y niveles bonus de monedas en 25, 50, 75, 100 y cada múltiplo de 25. Instala esta versión una vez a mano; las siguientes vendrán solas."
 }
