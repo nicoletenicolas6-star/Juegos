@@ -1,7 +1,7 @@
 {
-  "version": "0.3.6",
-  "codigo": 9,
+  "version": "0.3.8",
+  "codigo": 11,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24118536,
-  "notas": "Pagos de 1 CUP por transferencia USSD: registra tu tarjeta y banco, abre los códigos del banco y teclea el PIN solo allí. La tarjeta destino es privada y no se muestra; confirma con «Ya transferí». Instalador que verifica la versión instalada al volver. Instala esta versión una vez a mano; las siguientes vendrán solas."
+  "tamano": 24119009,
+  "notas": "Pago por USSD con «Transferir» bloqueado hasta confirmar «Ya autentiqué» tras el SMS del banco. Tarjeta de origen de 16 números y tarjeta destino copiada sin guiones. Confirma la operación en el banco y pulsa «Ya transferí»."
 }
