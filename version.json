@@ -1,7 +1,7 @@
 {
-  "version": "0.3.5",
-  "codigo": 8,
+  "version": "0.3.6",
+  "codigo": 9,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24080957,
-  "notas": "Barra de corriente hacia la termoeléctrica, apagón con luz que sigue a la ficha tocada, vela/linterna/ecoflow comprables y niveles bonus de monedas en 25, 50, 75, 100 y cada múltiplo de 25. Instala esta versión una vez a mano; las siguientes vendrán solas."
+  "tamano": 24118536,
+  "notas": "Pagos de 1 CUP por transferencia USSD: registra tu tarjeta y banco, abre los códigos del banco y teclea el PIN solo allí. La tarjeta destino es privada y no se muestra; confirma con «Ya transferí». Instalador que verifica la versión instalada al volver. Instala esta versión una vez a mano; las siguientes vendrán solas."
 }
