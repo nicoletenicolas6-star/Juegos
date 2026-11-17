@@ -1,7 +1,7 @@
 {
-  "version": "0.3.2",
-  "codigo": 5,
+  "version": "0.3.3",
+  "codigo": 6,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24035278,
-  "notas": "La actualización ya se descarga e instala dentro del juego: dos reyes pelean mientras avanza la barra y Android abre su instalador. Sin pasar por GitHub."
+  "tamano": 24051769,
+  "notas": "Iconos en el menú, engranaje de Ajustes, código secreto manu y mapa de niveles más bonito. Si no hay conexión, el aviso ya no menciona GitHub."
 }
