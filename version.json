@@ -1,7 +1,7 @@
 {
-  "version": "0.3.8",
-  "codigo": 11,
+  "version": "0.3.9",
+  "codigo": 12,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24119009,
-  "notas": "Pago por USSD con «Transferir» bloqueado hasta confirmar «Ya autentiqué» tras el SMS del banco. Tarjeta de origen de 16 números y tarjeta destino copiada sin guiones. Confirma la operación en el banco y pulsa «Ya transferí»."
+  "tamano": 24118457,
+  "notas": "La barra de corriente avanza ahora desde el nivel 1; el apagón del tablero sigue empezando en el 6. El pago por USSD queda igual: autenticación con «Ya autentiqué», tarjeta origen de 16 números y destino privado copiado sin guiones."
 }
