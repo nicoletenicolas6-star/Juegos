@@ -1,7 +1,7 @@
 {
-  "version": "0.4.7",
-  "codigo": 20,
+  "version": "0.4.8",
+  "codigo": 21,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24170367,
-  "notas": "El asistente encuentra el cuadro del banco en cualquier ventana de accesibilidad, rellena solo la cuenta destino y el monto de 1 CUP y nunca escribe en campos de PIN. El deadline de autenticacion ya no se reinicia: el pago no se queda colgado; el PIN lo teclea la persona en el banco."
+  "tamano": 24171558,
+  "notas": "El asistente no marca el USSD hasta que accesibilidad conecta de verdad. Rellena solos la tarjeta que vuelva a pedir el banco, la cuenta destino y el monto de 1 CUP. El PIN lo teclea siempre el jugador en el banco. ussd_captura.txt guarda el diagnostico de ventanas y campos."
 }
