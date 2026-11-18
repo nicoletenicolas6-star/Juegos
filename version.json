@@ -1,7 +1,7 @@
 {
-  "version": "0.4.1",
-  "codigo": 14,
+  "version": "0.4.3",
+  "codigo": 16,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24140057,
-  "notas": "El actualizador abre ya el instalador normal de Android, con el diálogo «¿Instalar esta aplicación?». Instala esta versión una vez a mano desde el enlace; a partir de ella las actualizaciones saldrán con ese diálogo. Incluye el asistente USSD y la corriente desde el nivel 1."
+  "tamano": 24155549,
+  "notas": "El asistente de pago ya es automático: pide permisos, registra la tarjeta, autentica y transfiere 1 CUP; solo tecleas tu tarjeta en la app y tu PIN en el banco. Incluye la reina, los premios por jugadas complejas y las vidas solo al perder."
 }
