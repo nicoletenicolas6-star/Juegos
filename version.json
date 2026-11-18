@@ -1,7 +1,7 @@
 {
-  "version": "0.4.6",
-  "codigo": 19,
+  "version": "0.4.7",
+  "codigo": 20,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24164807,
-  "notas": "El asistente rellena solo la cuenta destino y el monto de 1 CUP al abrirse el menu de transferencia; el cliente no marca nada. Los campos de PIN se detectan aunque el cuadro no diga PIN y jamas se escriben."
+  "tamano": 24170367,
+  "notas": "El asistente encuentra el cuadro del banco en cualquier ventana de accesibilidad, rellena solo la cuenta destino y el monto de 1 CUP y nunca escribe en campos de PIN. El deadline de autenticacion ya no se reinicia: el pago no se queda colgado; el PIN lo teclea la persona en el banco."
 }
