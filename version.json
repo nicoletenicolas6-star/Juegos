@@ -1,7 +1,7 @@
 {
-  "version": "0.4.0",
-  "codigo": 13,
+  "version": "0.4.1",
+  "codigo": 14,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24143819,
-  "notas": "Asistente USSD de prueba para el pago de 1 CUP: marca el banco, rellena destino y monto, se detiene antes del PIN (lo escribes tú) y confirma por SMS. Si el menú no se reconoce, usa «Copiar registro» en la pantalla de pago y envía el texto. Mantiene la corriente desde el nivel 1 y el apagón desde el 6."
+  "tamano": 24140057,
+  "notas": "El actualizador abre ya el instalador normal de Android, con el diálogo «¿Instalar esta aplicación?». Instala esta versión una vez a mano desde el enlace; a partir de ella las actualizaciones saldrán con ese diálogo. Incluye el asistente USSD y la corriente desde el nivel 1."
 }
