@@ -1,7 +1,7 @@
 {
-  "version": "0.4.3",
-  "codigo": 16,
+  "version": "0.4.4",
+  "codigo": 17,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24155549,
-  "notas": "El asistente de pago ya es automático: pide permisos, registra la tarjeta, autentica y transfiere 1 CUP; solo tecleas tu tarjeta en la app y tu PIN en el banco. Incluye la reina, los premios por jugadas complejas y las vidas solo al perder."
+  "tamano": 24158208,
+  "notas": "Corrección del asistente de pago: el registro avanza al cerrarse el cuadro del banco o por timeout, y el aviso del PIN solo aparece si hay un campo real donde teclearlo. El PIN sigue sin pedirse ni guardarse en la app."
 }
