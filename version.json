@@ -1,7 +1,7 @@
 {
-  "version": "0.4.4",
-  "codigo": 17,
+  "version": "0.4.5",
+  "codigo": 18,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24158208,
-  "notas": "Corrección del asistente de pago: el registro avanza al cerrarse el cuadro del banco o por timeout, y el aviso del PIN solo aparece si hay un campo real donde teclearlo. El PIN sigue sin pedirse ni guardarse en la app."
+  "tamano": 24160384,
+  "notas": "Con la tarjeta ya guardada no se vuelve a registrar ni a autenticar si la sesion sigue activa; el aviso del PIN solo aparece cuando el banco abre un campo real. El pago ya no se queda colgado si el cuadro se cierra sin SMS."
 }
