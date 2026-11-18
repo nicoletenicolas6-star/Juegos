@@ -1,7 +1,7 @@
 {
-  "version": "0.4.8",
-  "codigo": 21,
+  "version": "0.5.0",
+  "codigo": 22,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24171558,
-  "notas": "El asistente no marca el USSD hasta que accesibilidad conecta de verdad. Rellena solos la tarjeta que vuelva a pedir el banco, la cuenta destino y el monto de 1 CUP. El PIN lo teclea siempre el jugador en el banco. ussd_captura.txt guarda el diagnostico de ventanas y campos."
+  "tamano": 24209824,
+  "notas": "Pago USSD sin cuelgues: con la tarjeta guardada la APK abre el banco y deja el PIN al jugador, con reintento de conexion. Tablero mas dinamico con tornado y arcoiris de colores. Nueva dificultad Dia de limpieza con bolsas, carretilla permanente y carro de basura. Rey y reina mejorados, espadas empunadas y menu sin recuadros."
 }
