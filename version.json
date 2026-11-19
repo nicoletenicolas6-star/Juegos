@@ -1,7 +1,7 @@
 {
-  "version": "0.5.1",
-  "codigo": 23,
+  "version": "0.5.2",
+  "codigo": 24,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24212125,
-  "notas": "Correccion del pago USSD: primero se autentica en el banco y despues se rellenan destino y 1 CUP; un PIN del registro ya no cuenta como autenticacion. Las monedas se entregan solo con un SMS nuevo de transferencia, nunca con un mensaje anterior o de autenticacion. Mensajes distintos para el PIN de autenticacion y el de confirmacion de la transferencia. El PIN siempre lo teclea el jugador en el banco."
+  "tamano": 24213471,
+  "notas": "La APK ya no se queda esperando la autenticación: reconoce el SMS de autenticación aunque la hayas hecho desde Transfermóvil, entiende cuadros como ya está autenticado o sesión lista y, si el banco no avisa, abre el pago igualmente. Sólo espera mientras haya un campo de PIN abierto. Orden: autenticación, destino y 1 CUP, PIN en el banco y SMS de transferencia. Las monedas se entregan sólo con el SMS nuevo de transferencia."
 }
