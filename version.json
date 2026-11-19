@@ -2,6 +2,6 @@
   "version": "0.5.1",
   "codigo": 23,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24211712,
+  "tamano": 24212125,
   "notas": "Correccion del pago USSD: primero se autentica en el banco y despues se rellenan destino y 1 CUP; un PIN del registro ya no cuenta como autenticacion. Las monedas se entregan solo con un SMS nuevo de transferencia, nunca con un mensaje anterior o de autenticacion. Mensajes distintos para el PIN de autenticacion y el de confirmacion de la transferencia. El PIN siempre lo teclea el jugador en el banco."
 }
