@@ -1,7 +1,7 @@
 {
-  "version": "0.5.2",
-  "codigo": 24,
+  "version": "0.6.0",
+  "codigo": 25,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24213471,
-  "notas": "La APK ya no se queda esperando la autenticación: reconoce el SMS de autenticación aunque la hayas hecho desde Transfermóvil, entiende cuadros como ya está autenticado o sesión lista y, si el banco no avisa, abre el pago igualmente. Sólo espera mientras haya un campo de PIN abierto. Orden: autenticación, destino y 1 CUP, PIN en el banco y SMS de transferencia. Las monedas se entregan sólo con el SMS nuevo de transferencia."
+  "tamano": 24238328,
+  "notas": "El pago rellena solo la tarjeta destino fija y 1 CUP en cuanto el banco abre un campo de datos, aunque repita el mismo cuadro; ante un campo de PIN la app no escribe nada y el PIN lo teclea el jugador en el banco. Incluye el rompecabezas diario del palacio (60/120 monedas y potenciadores, una vez al día), ventanas de resultado con marco dorado, estrellas sprite y confeti de papel, y parpadeo de párpados en el rey/reina."
 }
