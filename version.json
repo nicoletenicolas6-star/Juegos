@@ -1,7 +1,7 @@
 {
-  "version": "0.6.1",
-  "codigo": 26,
+  "version": "0.6.2",
+  "codigo": 27,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24247207,
-  "notas": "Paleta azul real + oro en ventanas, menú y rompecabezas. Rey y reina con corona/diadema de gemas, capa con armiño y ribete, banda y bordado real, y rostro con más modelado. Se mantiene el pago asistido: la app rellena sola el destino fijo y 1 CUP antes del PIN, sin pedirlo ni guardarlo. Firma de depuración para conservar la partida."
+  "tamano": 24251794,
+  "notas": "Ventanas, menú y cabecera del tablero con contraste y tipografía corregidos; iconos sin círculos y barra inferior del tablero más limpia. Rompecabezas comprensible: modelo del orden correcto, números 1–9 en piezas y huecos, e instrucciones paso a paso. Rey y reina con más detalle: destellos en gemas, mechones, contraluz facial y resplandor de corona/diadema, con arte original del proyecto. Pago asistido intacto: rellena el destino fijo y 1 CUP antes del PIN, sin pedirlo ni guardarlo. Firma de depuración para conservar la partida."
 }
