@@ -1,7 +1,7 @@
 {
-  "version": "0.6.0",
-  "codigo": 25,
+  "version": "0.6.1",
+  "codigo": 26,
   "url": "https://github.com/nicoletenicolas6-star/Juegos/releases/latest/download/ReinoHabana.apk",
-  "tamano": 24238328,
-  "notas": "El pago rellena solo la tarjeta destino fija y 1 CUP en cuanto el banco abre un campo de datos, aunque repita el mismo cuadro; ante un campo de PIN la app no escribe nada y el PIN lo teclea el jugador en el banco. Incluye el rompecabezas diario del palacio (60/120 monedas y potenciadores, una vez al día), ventanas de resultado con marco dorado, estrellas sprite y confeti de papel, y parpadeo de párpados en el rey/reina."
+  "tamano": 24247207,
+  "notas": "Paleta azul real + oro en ventanas, menú y rompecabezas. Rey y reina con corona/diadema de gemas, capa con armiño y ribete, banda y bordado real, y rostro con más modelado. Se mantiene el pago asistido: la app rellena sola el destino fijo y 1 CUP antes del PIN, sin pedirlo ni guardarlo. Firma de depuración para conservar la partida."
 }
